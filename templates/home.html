@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Jackpot Tracker
+    </title>
+    <!-- HTML5 Shim and Respond.js IE10 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 10]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description"
+          content="Jackpot Private Website"/>
+    <meta name="keywords"
+          content="Jackpot"/>
+    <meta name="author" content="Tracker"/>
+
+    <!-- Favicon icon -->
+    <link rel="icon" href="/static/assets/images/favicon.ico" type="image/x-icon">
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="/static/assets/fonts/fontawesome/css/fontawesome-all.min.css">
+    <!-- animation css -->
+    <link rel="stylesheet" href="/static/assets/plugins/animation/css/animate.min.css">
+    <!-- vendor css -->
+    <link rel="stylesheet" href="/static/assets/css/style.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+
+    <!-- Specific CSS goes HERE -->
+
+
+</head>
+
+<body>
+
+<!-- [ Pre-loader ] start -->
+<div class="loader-bg">
+    <div class="loader-track">
+        <div class="loader-fill"></div>
+    </div>
+</div>
+
+
+<nav class="pcoded-navbar navbar-collapsed">
+    <div class="navbar-wrapper">
+        <div class="navbar-brand header-logo">
+            <a target="_blank" href="#" class="b-brand">
+                <div class="b-bg">
+                    <i class="feather icon-zap"></i>
+                </div>
+                <span class="b-title">Jackpot Tracker</span>
+            </a>
+            <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
+        </div>
+        <div class="navbar-content scroll-div">
+            <ul class="nav pcoded-inner-navbar">
+                <li class="nav-item pcoded-menu-caption">
+                    <label>Navigation</label>
+                </li>
+                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+                    class="nav-item ">
+                    <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+
+
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                <!-- [ breadcrumb ] start -->
+                <div class="page-header">
+                    <div class="page-block">
+                        <div class="row align-items-center">
+                            <div class="col-md-12">
+                                <div class="page-header-title">
+                                    <h5 class="m-b-10">Jackpot Tracer</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- [ breadcrumb ] end -->
+                <div class="main-body">
+                    <div class="page-wrapper">
+
+
+                        <!-- [ Main Content ] start -->
+                        <div class="row">
+
+                            <!-- [ Hover-table ] start -->
+                            <div class="col-xl-12">
+                                {% for data in jackpot_data %}
+                                <div class="card">
+                                    <div class="card-header">
+
+                                        {% if data.status %}
+                                        <div class="spinner-grow text-warning float-right" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="float-right">
+                                            <svg width="5em" height="5em" viewBox="0 0 16 16" class="bi bi-check" fill="green" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd"
+                                                      d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z"/>
+                                            </svg>
+
+                                        </div>
+                                        {% endif %}
+
+
+                                        <br>
+                                        <h4>Book Of Relics - NetBet</h4> <br>
+                                        <h6>Tracking Started : {{data['tracking_started_at_natural']}} </h6>
+                                        <h6>Last Updated At: {{data['last_updated_at_natural']}}</h6>
+
+                                    </div>
+                                    <div class="card-block table-border-style ">
+                                        <div class="table-responsive">
+                                            <table class="table ">
+                                                <thead>
+                                                <tr>
+                                                    <th>Type</th>
+                                                    <th>Drop Amount</th>
+                                                    <th>Current Data</th>
+                                                    <th>Last Update</th>
+                                                    <th>History</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td><a href="https://jackpot-query-mt.nyxop.net/v3/jackpots?instance={{data['instance_epic']}}&currency=GBP" target="_blank">Epic</a></td>
+                                                    <td> {{data['drop_amount_epic']}}</td>
+                                                    <td>{{data['epic_data']}}</td>
+                                                    <td>{{data['updated_date_natural']}}</td>
+                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><a href="https://jackpot-query-mt.nyxop.net/v3/jackpots?instance={{data['instance_major']}}&currency=GBP" target="_blank">Major</a></td>
+                                                    <td> {{data['drop_amount_major']}}</td>
+                                                    <td>{{data['major_data']}}</td>
+                                                    <td>{{data['updated_date_natural']}}</td>
+                                                    <td><a href="/get_history?id={{data['instance_major']}}" target="_blank">Goto</a></td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><a href="https://jackpot-query-mt.nyxop.net/v3/jackpots?instance={{data['instance_minor']}}&currency=GBP" target="_blank">Minor</a></td>
+                                                    <td> {{data['drop_amount_minor']}}</td>
+                                                    <td>{{data['minor_data']}}</td>
+                                                    <td>{{data['updated_date_natural']}}</td>
+                                                    <td><a href="/get_history?id={{data['instance_minor']}}" target="_blank">Goto</a></td>
+                                                </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <!-- [ Hover-table ] end -->
+
+
+                        </div>
+                        <!-- [ Main Content ] end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Required Js -->
+<script src="/static/assets/js/vendor-all.min.js"></script>
+<script src="/static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/assets/js/pcoded.min.js"></script>
+
+
+<!-- Specific Page JS goes HERE  -->
+
+
+</body>
+</html>
