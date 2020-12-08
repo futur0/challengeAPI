@@ -102,3 +102,5 @@ if __name__ == '__main__':
     refresh_current_instance()
     sleep(10)
     refresh_current_instance()
+    sleep(10)
+    refresh_current_instance()
