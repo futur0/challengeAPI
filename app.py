@@ -149,7 +149,7 @@ def get_all_jackpots_json():
 # https://jackpot-query-mt.nyxop.net/v3/jackpots?instance=9df7b3b2-dec3-4a08-8991-e38e956a0aea&instance=f857f635-df85-44a6-b19b-692a52ca74c6&instance=6f4a2200-8b9f-4482-82ee-8651078ab84f&currency=GBP
 @app.route('/add_jackpot_instance')
 def add_jackpot_instance():
-    # http://0.0.0.0:8000/add_jackpot_instance?instance_epic=9df7b3b2-dec3-4a08-8991-e38e956a0aea&instance_major=f857f635-df85-44a6-b19b-692a52ca74c6&instance_minor=6f4a2200-8b9f-4482-82ee-8651078ab84f&drop_amount_epic=13542.50&drop_amount_major=4514.10&drop_amount_minor=1354.23
+    # s
     instance_epic = request.args['instance_epic']
     instance_major = request.args['instance_major']
     instance_minor = request.args['instance_minor']
