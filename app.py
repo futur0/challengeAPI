@@ -11,7 +11,7 @@ from libs.utils import humanize_date_difference
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/noobie/projects/freelancing/pph_betting_automtion_june_15_2020/jackpot_monitor_and_alert/database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/amitupreti/jackpot-tracker/database.db'
 
 app.config['SECRET_KEY'] = '38c12fd78e53488da82c1e27003c2030'
 
