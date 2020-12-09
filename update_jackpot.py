@@ -53,19 +53,19 @@ def refresh_current_instance():
                 }
                 result = load_instance(check_data)
 
-                if epic_data != result['epic']:
+                if epic_data != result['epic'] and result['epic']:
                     jackpot_data_object.epic_data = result['epic']
                     print('Epic Old Data: {} New Data: {}'.format(epic_data, result['epic']))
                     print('Epic updated at {}'.format(datetime.now()))
                     jackpot_data_object.updated_date = datetime.now()
 
-                if minor_data != result['minor']:
+                if minor_data != result['minor'] and result['minor']:
                     jackpot_data_object.minor_data = result['minor']
                     print('Minor Old Data: {} New Data: {}'.format(minor_data, result['minor']))
                     jackpot_data_object.updated_date = datetime.now()
                     print('Minor updated at {}'.format(datetime.now()))
 
-                if major_data != result['major']:
+                if major_data != result['major'] and result['major']:
                     jackpot_data_object.major_data = result['major']
                     print('Major Old Data: {} New Data: {}'.format(major_data, result['major']))
                     jackpot_data_object.updated_date = datetime.now()
