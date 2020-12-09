@@ -5,6 +5,21 @@ from datetime import datetime
 db = SQLAlchemy()
 
 
+class JackPotDataHistory(db.Model):
+    __tablename__ = 'jackpotdatahistory'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    epic_data = db.Column(db.Float(), unique=False, nullable=True)
+    major_data = db.Column(db.Float(), unique=False, nullable=True)
+    minor_data = db.Column(db.Float(), unique=False, nullable=True)
+
+    updated_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    jack_pot_data = db.Column(db.Integer, db.ForeignKey('jackpotdata.id'), nullable=False)
+    jackpotdata = db.relationship('JackPotData', backref=db.backref('jackpotdata', lazy=True))
+
+
 class JackPotData(db.Model):
     __tablename__ = 'jackpotdata'
     id = db.Column(db.Integer, primary_key=True)

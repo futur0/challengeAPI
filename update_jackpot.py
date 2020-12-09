@@ -3,7 +3,7 @@ from datetime import datetime
 from time import sleep
 
 from app import app, db
-from configs.models import JackPotData, JackPotIndex
+from configs.models import JackPotData, JackPotIndex, JackPotDataHistory
 from libs.utils import load_instance, check_time
 
 
@@ -38,12 +38,12 @@ def refresh_current_instance():
                 # TODO
                 #  if last update was 1 hour ago. Change status to off
                 has_been_1_hour = check_time(updated_date)
-                if has_been_1_hour:
-                    active_instance.status = False
-                    db.session.add(active_instance)
-                    db.session.commit()
-                    print('Turning off  Status for {}'.format(jackpot_id))
-                    continue
+                # if has_been_1_hour:
+                #     active_instance.status = False
+                #     db.session.add(active_instance)
+                #     db.session.commit()
+                #     print('Turning off  Status for {}'.format(jackpot_id))
+                #     continue
 
                 # get the data for instances and compare to the old data here
                 check_data = {
@@ -52,6 +52,27 @@ def refresh_current_instance():
                     'major': instance_major,
                 }
                 result = load_instance(check_data)
+
+                if result['epic'] == None and result['minor'] == None and result['major'] == None:
+                    active_instance.status = False
+                    db.session.add(active_instance)
+                    db.session.commit()
+                    print('Turning off  Status for {}'.format(jackpot_id))
+                    continue
+                else:
+                    # import ipdb
+                    # ipdb.set_trace()
+                    if epic_data != result['epic'] or major_data != result['major'] or minor_data != result['minor']:
+                        jackpot_history = JackPotDataHistory(
+                            epic_data=result['epic'],
+                            major_data=result['major'],
+                            minor_data=result['minor'],
+                            jack_pot_data=jackpot_data_object_id,
+                            updated_date=datetime.now()
+                        )
+                        db.session.add(jackpot_history)
+                        db.session.commit()
+                        print('History Updated')
 
                 if epic_data != result['epic'] and result['epic']:
                     jackpot_data_object.epic_data = result['epic']
