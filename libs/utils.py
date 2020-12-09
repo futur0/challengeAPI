@@ -114,7 +114,7 @@ def load_instance(upload_data):
 
 
 def check_time(start_time):
-    ALLOWED_SECONDS = 60 * 60
+    ALLOWED_SECONDS = 60 * 60 * 24
     seconds_passed = (datetime.datetime.now() - start_time).seconds
     print('Time passed {} minutes'.format(seconds_passed / 60))
     if seconds_passed >= ALLOWED_SECONDS:

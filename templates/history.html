@@ -97,7 +97,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">History(Updated Hourly)</h5>
+                                    <h5 class="m-b-10">History For this instance</h5>
                                 </div>
                             </div>
                         </div>
@@ -113,7 +113,114 @@
 
                             <!-- [ Hover-table ] start -->
                             <div class="col-xl-12">
-                                <h4 class="bg-warning"> No history recorded</h4>
+                                <div class="card">
+                                    <div class="card-header">
+
+
+                                        <br>
+                                        <h4>Book Of Relics - NetBet - EPIC</h4> <br>
+
+                                    </div>
+                                    <div class="card-block table-border-style ">
+                                        <div class="table-responsive table-bordered">
+                                            <table class="table ">
+                                                <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Date String</th>
+                                                    <th>Date Human</th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for data in epic %}
+                                                <tr>
+                                                    <td> {{data['data']}}</td>
+                                                    <td>{{data['date']}}</td>
+                                                    <td>{{data['date_natural']}}</td>
+                                                    <!--                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>-->
+                                                </tr>
+                                                {% endfor %}
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+
+
+                                        <br>
+                                        <h4>Book Of Relics - NetBet - MAJOR</h4> <br>
+
+                                    </div>
+                                    <div class="card-block table-border-style ">
+                                        <div class="table-responsive table-bordered">
+                                            <table class="table ">
+                                                <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Date String</th>
+                                                    <th>Date Human</th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for data in major %}
+                                                <tr>
+                                                    <td> {{data['data']}}</td>
+                                                    <td>{{data['date']}}</td>
+                                                    <td>{{data['date_natural']}}</td>
+                                                    <!--                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>-->
+                                                </tr>
+                                                {% endfor %}
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="card">
+                                    <div class="card-header">
+
+
+                                        <br>
+                                        <h4>Book Of Relics - NetBet - MINOR</h4> <br>
+
+                                    </div>
+                                    <div class="card-block table-border-style ">
+                                        <div class="table-responsive table-bordered">
+                                            <table class="table ">
+                                                <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Date String</th>
+                                                    <th>Date Human</th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for data in minor %}
+                                                <tr>
+                                                    <td> {{data['data']}}</td>
+                                                    <td>{{data['date']}}</td>
+                                                    <td>{{data['date_natural']}}</td>
+                                                    <!--                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>-->
+                                                </tr>
+                                                {% endfor %}
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- [ Hover-table ] end -->
 

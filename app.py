@@ -4,7 +4,7 @@ from datetime import datetime
 import humanize
 from flask import (Flask, jsonify, request, render_template)
 
-from configs.models import JackPotIndex, JackPotData
+from configs.models import JackPotIndex, JackPotData, JackPotDataHistory
 from configs.models import db
 
 app = Flask(__name__)
@@ -224,6 +224,56 @@ def add_jackpot_data():
         'message': message,
     }
     return jsonify(response)
+
+
+@app.route('/get_jackpot_history')
+def get_jackpot_history():
+    # http://0.0.0.0:8000/add_jackpot_instance?instance_epic=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_major=f857f635-df85-44a6-b19b-692a52ca74c6&instance_minor=9df7b3b2-dec3-4a08-8991-e38e956a0aea&drop_amount_epic=13542.50&drop_amount_major=4514.10&drop_amount_minor=1354.23
+    data_id = request.args['id']
+
+    all_history = JackPotDataHistory.query.filter_by(jack_pot_data=data_id).order_by(JackPotDataHistory.updated_date.desc()).all()
+
+    epic = []
+    major = []
+    minor = []
+    for obj in all_history:
+        epic_data = obj.epic_data
+        major_data = obj.major_data
+        minor_data = obj.minor_data
+
+        updated_date = obj.updated_date
+        updated_date_natural = humanize.naturaltime(updated_date)
+        if epic_data:
+            if epic_data not in [i['data'] for i in epic]:
+                epic.append({
+                    'data': epic_data,
+                    'date': updated_date,
+                    'date_natural': updated_date_natural,
+                })
+
+        if major_data:
+            if major_data not in [i['data'] for i in major]:
+                major.append({
+                    'data': major_data,
+                    'date': updated_date,
+                    'date_natural': updated_date_natural,
+                })
+
+        if minor_data:
+            if minor_data not in [i['data'] for i in minor]:
+                minor.append({
+                    'data': minor_data,
+                    'date': updated_date,
+                    'date_natural': updated_date_natural,
+                })
+
+    epic = sorted(epic, key=lambda k: k['data'], reverse=True)
+
+    major = sorted(major, key=lambda k: k['data'], reverse=True)
+
+    minor = sorted(minor, key=lambda k: k['data'], reverse=True)
+
+    return render_template('history.html', epic=epic, major=major, minor=minor)
 
 
 if __name__ == "__main__":

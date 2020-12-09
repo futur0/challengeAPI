@@ -128,6 +128,9 @@
                                         <h6>Tracking Started : {{data['tracking_started_at_natural']}} </h6>
                                         <h6>Last Updated At : {{data['last_updated_at_natural']}}</h6>
 
+                                        <br>
+                                        <h6><a href="/get_jackpot_history?id={{data['jackpot_data_object_id']}}" target="_blank">Get History</a></h6>
+
                                     </div>
                                     <div class="card-block table-border-style ">
                                         <div class="table-responsive">
@@ -138,7 +141,7 @@
                                                     <th>Drop Amount</th>
                                                     <th>Current Data</th>
                                                     <th>Last Update</th>
-                                                    <th>History</th>
+                                                    <!--                                                    <th>History</th>-->
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -147,7 +150,7 @@
                                                     <td> {{data['drop_amount_epic']}}</td>
                                                     <td>{{data['epic_data']}}</td>
                                                     <td>{{data['updated_date_natural']}}</td>
-                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>
+                                                    <!--                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>-->
                                                 </tr>
 
                                                 <tr>
@@ -155,7 +158,7 @@
                                                     <td> {{data['drop_amount_major']}}</td>
                                                     <td>{{data['major_data']}}</td>
                                                     <td>{{data['updated_date_natural']}}</td>
-                                                    <td><a href="/get_history?id={{data['instance_major']}}" target="_blank">Goto</a></td>
+                                                    <!--                                                                                                        <td><</td>-->
                                                 </tr>
 
                                                 <tr>
@@ -163,7 +166,7 @@
                                                     <td> {{data['drop_amount_minor']}}</td>
                                                     <td>{{data['minor_data']}}</td>
                                                     <td>{{data['updated_date_natural']}}</td>
-                                                    <td><a href="/get_history?id={{data['instance_minor']}}" target="_blank">Goto</a></td>
+                                                    <!--                                                    <td><a href="/get_history?id={{data['instance_minor']}}" target="_blank">Goto</a></td>-->
                                                 </tr>
 
                                                 </tbody>

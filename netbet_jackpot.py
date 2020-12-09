@@ -76,7 +76,7 @@ class NetBetJackPotMonitor:
         driver.get(self.relic_url)
         # # import ipdb
         self.login(driver)
-        #
+
         return {
             "TOKEN": {
                 'EPIC': '9df7b3b2-dec3-4a08-8991-e38e956a0aea',
