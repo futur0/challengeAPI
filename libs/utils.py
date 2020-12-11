@@ -46,7 +46,7 @@ def humanize_date_difference(otherdate=None, offset=None):
         return "%ds ago" % delta_s
 
 
-def load_instance(upload_data):
+def load_instance(instance_id):
     headers = {
         'Connection': 'keep-alive',
         'DNT': '1',
@@ -60,57 +60,24 @@ def load_instance(upload_data):
         'Accept-Language': 'en-US,en;q=0.9',
     }
 
-    for key, value in upload_data.items():
-        print(' Updating for {} : {}'.format(key, value))
-
     output = {'epic': '', 'minor': '', 'major': ''}
 
     try:
         params = (
-            ('instance', upload_data['minor']),
+            ('instance', instance_id),
             ('currency', 'GBP'),
         )
         print('Loading Minor')
         response = requests.get('https://jackpot-query-mt.nyxop.net/v3/jackpots', headers=headers, params=params)
         print('Ok Loaded')
-        data = json.loads(response.text)['jackpots']
-        output['minor'] = [i for i in data if i['id'] == 'MegaJackpotMinorLow'][0]['balanceAmountInRequestedCurrency']
-        print('Minor Response: {}'.format(output['minor']))
+        result = None
+        data = json.loads(response.text)['jackpots'][0]
+        result = data['balanceAmountInRequestedCurrency']
+        print(result)
     except Exception as e:
         print(e)
-        output['minor'] = None
 
-    try:
-        params = (
-            ('instance', upload_data['major']),
-            ('currency', 'GBP'),
-        )
-        print('Loading Major')
-        response = requests.get('https://jackpot-query-mt.nyxop.net/v3/jackpots', headers=headers, params=params)
-        print('Ok Loaded')
-        data = json.loads(response.text)['jackpots']
-        output['major'] = [i for i in data if i['id'] == 'MegaJackpotMajorLow'][0]['balanceAmountInRequestedCurrency']
-        print('Major Response: {}'.format(output['major']))
-    except Exception as e:
-        print(e, response.text)
-        output['major'] = None
-
-    try:
-        params = (
-            ('instance', upload_data['epic']),
-            ('currency', 'GBP'),
-        )
-        print('Loading Epic')
-        response = requests.get('https://jackpot-query-mt.nyxop.net/v3/jackpots', headers=headers, params=params)
-        print('Ok Loaded')
-        data = json.loads(response.text)['jackpots']
-        output['epic'] = [i for i in data if i['id'] == 'MegaJackpotEpicLow'][0]['balanceAmountInRequestedCurrency']
-        print('Epic Response: {}'.format(output['epic']))
-    except Exception as e:
-        print(e)
-        output['epic'] = ''
-
-    return output
+    return result
 
 
 def check_time(start_time):

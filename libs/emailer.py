@@ -1,4 +1,3 @@
-
 from datetime import datetime
 import os
 from sendgrid import SendGridAPIClient
@@ -17,13 +16,13 @@ class Emailer:
             https://docs.python.org/3/library/configparser.html
     """
 
-    def __init__(self, email, messaage, subject=''):
+    def __init__(self, email, message, subject):
         # these credentials will be used to send email
 
         # Summary will be send to the client email
         self.client_email = email
 
-        self.html_content = messaage
+        self.html_content = message
 
         if subject:
             self.subject = subject
@@ -48,11 +47,10 @@ class Emailer:
         :return:
         """
 
-
         message = Mail(
             from_email='info@scrapingmesh.com',
             to_emails=self.client_email,
-            subject= self.subject,
+            subject=self.subject,
             html_content=self.html_content)
 
         sg = SendGridAPIClient('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')
