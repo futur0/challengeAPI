@@ -11,7 +11,7 @@ config = {
     },
 
     'PRD': {
-        'PROJECT_PATH': '/home/amitupreti/betting-automation-main',
+        'PROJECT_PATH': '/home/amitupreti/jackpot-tracker',
         'DB_HOST': 'localhost',
         'DB_NAME': 'automation1',
         'DB_USER': 'automation',
