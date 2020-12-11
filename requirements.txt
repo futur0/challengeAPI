@@ -3,3 +3,4 @@ ipdb
 requests
 Flask-SQLAlchemy
 humanize
+sendgrid

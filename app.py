@@ -1,85 +1,60 @@
 import os
-from datetime import datetime
 
 import humanize
-from flask import (Flask, jsonify, request, render_template)
+from flask import (Flask, jsonify, request, render_template, redirect)
 
-from configs.models import JackPotIndex, JackPotData, JackPotDataHistory
+from configs.env import config
+from configs.models import JackPotIndex, Settings
 from configs.models import db
 
+APP_ENV = os.environ.get('APP_ENV', 'PRD')
+PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
+print(PROJECT_PATH)
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-if os.environ.get('APP_ENV', 'PRD').upper() == 'DEV':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/noobie/projects/freelancing/pph_betting_automtion_june_15_2020/jackpot_monitor_and_alert/database.db'
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/amitupreti/jackpot-tracker/database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{PROJECT_PATH}/database.db'
 
 app.config['SECRET_KEY'] = '38c12fd78e53488da82c1e27003c2030'
 
 db.init_app(app)
 
+if not os.path.exists(f'{PROJECT_PATH}/database.db'):
+    print('No Data Base file found')
+    # TO create the database
+    with app.app_context():
+        db.create_all()
 
-# TO create the database
-# with app.app_context():
-#     db.create_all()
 
+#
 
 @app.route('/')
 def home():
     """Main Automation tracker and starter for all account and websites"""
     jackpot_data = []
-    jackpots = JackPotIndex.query.all()
+    jackpots = JackPotIndex.query.filter_by(is_closed=False).all()
     for jackpot in jackpots:
-        instance_minor = jackpot.instance_minor
-        instance_major = jackpot.instance_major
-        instance_epic = jackpot.instance_epic
-        status = jackpot.status
-        drop_amount_major = jackpot.drop_amount_major
-        drop_amount_minor = jackpot.drop_amount_minor
-        drop_amount_epic = jackpot.drop_amount_epic
-        tracking_started_at = jackpot.indexed_date
+        instance_id = jackpot.instance_id
+        instance_name = jackpot.instance_name
+        drop_amount = jackpot.drop_amount
+        data = jackpot.data
+        is_closed = jackpot.is_closed
         last_updated_at = jackpot.last_updated_at
-
-        jackpot_id = jackpot.id
-        jackpot_data_object_count = JackPotData.query.filter_by(index_id=jackpot_id).count()
-        jackpot_data_object = JackPotData.query.filter_by(index_id=jackpot_id).order_by(JackPotData.updated_date.desc()).first()
-        jackpot_data_object_id = jackpot_data_object.id
-        epic_data = jackpot_data_object.epic_data
-        major_data = jackpot_data_object.major_data
-        minor_data = jackpot_data_object.minor_data
-        updated_date = jackpot_data_object.updated_date
+        tracking_started_at = jackpot.indexed_date
+        notified = jackpot.notified
 
         jackpot_data.append({
-            'instance_minor': instance_minor,
-            'instance_major': instance_major,
-            'instance_epic': instance_epic,
-
+            'instance_id': instance_id,
+            'instance_name': instance_name,
+            'drop_amount': drop_amount,
+            'data': data,
             'tracking_started_at': tracking_started_at,
             'tracking_started_at_natural': humanize.naturaltime(tracking_started_at),
-
+            'status': is_closed,
+            'notified': notified,
             'last_updated_at': last_updated_at,
             'last_updated_at_natural': humanize.naturaltime(last_updated_at),
-            #
-
-            'jackpot_id': jackpot_id,
-
-            'jackpot_data_object_count': jackpot_data_object_count,
-            'jackpot_data_object_id': jackpot_data_object_id,
-
-            'epic_data': epic_data,
-            'major_data': major_data,
-            'minor_data': minor_data,
-
-            'drop_amount_major': drop_amount_major,
-            'drop_amount_minor': drop_amount_minor,
-            'drop_amount_epic': drop_amount_epic,
-
-            'updated_date': updated_date,
-            'updated_date_natural': humanize.naturaltime(updated_date),
-            #
-            'status': status,
 
         })
 
@@ -88,60 +63,32 @@ def home():
     return jsonify(jackpot_data)
 
 
-@app.route('/get_history')
-def get_history():
-    """Main Automation tracker and starter for all account and websites"""
-
-    return render_template('history.html')
-
-    return jsonify(jackpot_data)
-
-
 @app.route('/get_all_jackpots_json')
 def get_all_jackpots_json():
     """Main Automation tracker and starter for all account and websites"""
-
     jackpot_data = []
-    jackpots = JackPotIndex.query.all()
+    jackpots = JackPotIndex.query.filter_by(is_closed=False).all()
     for jackpot in jackpots:
-        instance_minor = jackpot.instance_minor
-        instance_major = jackpot.instance_major
-        instance_epic = jackpot.instance_epic
-        status = jackpot.status
-        drop_amount_major = jackpot.drop_amount_major
-        drop_amount_minor = jackpot.drop_amount_minor
-        drop_amount_epic = jackpot.drop_amount_epic
+        instance_id = jackpot.instance_id
+        instance_name = jackpot.instance_name
+        drop_amount = jackpot.drop_amount
+        data = jackpot.data
+        is_closed = jackpot.is_closed
+        last_updated_at = jackpot.last_updated_at
         tracking_started_at = jackpot.indexed_date
+        notified = jackpot.notified
 
-        jackpot_id = jackpot.id
-        jackpot_data_object_count = JackPotData.query.filter_by(index_id=jackpot_id).count()
-        jackpot_data_object = JackPotData.query.filter_by(index_id=jackpot_id).order_by(JackPotData.updated_date.desc()).first()
-        jackpot_data_object_id = jackpot_data_object.id
-        epic_data = jackpot_data_object.epic_data
-        major_data = jackpot_data_object.major_data
-        minor_data = jackpot_data_object.minor_data
-        updated_date = jackpot_data_object.updated_date
         jackpot_data.append({
-            'instance_minor': instance_minor,
-            'instance_major': instance_major,
-            'instance_epic': instance_epic,
-
+            'instance_id': instance_id,
+            'instance_name': instance_name,
+            'drop_amount': drop_amount,
+            'data': data,
             'tracking_started_at': tracking_started_at,
-
-            'jackpot_id': jackpot_id,
-
-            'jackpot_data_object_count': jackpot_data_object_count,
-            'jackpot_data_object_id': jackpot_data_object_id,
-
-            'epic_data': epic_data,
-            'major_data': major_data,
-            'minor_data': minor_data,
-
-            'drop_amount_major': drop_amount_major,
-            'drop_amount_minor': drop_amount_minor,
-            'drop_amount_epic': drop_amount_epic,
-
-            'updated_date': updated_date,
+            'tracking_started_at_natural': humanize.naturaltime(tracking_started_at),
+            'status': is_closed,
+            'notified': notified,
+            'last_updated_at': last_updated_at,
+            'last_updated_at_natural': humanize.naturaltime(last_updated_at),
 
         })
 
@@ -151,21 +98,25 @@ def get_all_jackpots_json():
 # https://jackpot-query-mt.nyxop.net/v3/jackpots?instance=9df7b3b2-dec3-4a08-8991-e38e956a0aea&instance=f857f635-df85-44a6-b19b-692a52ca74c6&instance=6f4a2200-8b9f-4482-82ee-8651078ab84f&currency=GBP
 @app.route('/add_jackpot_instance')
 def add_jackpot_instance():
-    # http://0.0.0.0:8000/add_jackpot_instance?instance_epic=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_major=f857f635-df85-44a6-b19b-692a52ca74c6&instance_minor=9df7b3b2-dec3-4a08-8991-e38e956a0aea&drop_amount_epic=13542.50&drop_amount_major=4514.10&drop_amount_minor=1354.23
-    instance_epic = request.args['instance_epic']
-    instance_major = request.args['instance_major']
-    instance_minor = request.args['instance_minor']
-    drop_amount_epic = request.args['drop_amount_epic']
-    drop_amount_major = request.args['drop_amount_major']
-    drop_amount_minor = request.args['drop_amount_minor']
+    # &instance_major=
+    # &instance_minor=9df7b3b2-dec3-4a08-8991-e38e956a0aea
+    # &drop_amount_major=
+    # &drop_amount_minor=
+
+    # http://0.0.0.0:8000/add_jackpot_instance?instance_id=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_name=EPIC&drop_amount=13665.00
+    # http://0.0.0.0:8000/add_jackpot_instance?instance_id=bcdbc277-a35d-465a-97b4-4ea2476ab874&instance_name=MAJOR&drop_amount=4555.00
+
+    # http://0.0.0.0:8000/add_jackpot_instance?instance_id=9df7b3b2-dec3-4a08-8991-e38e956a0aea&instance_name=MINOR&drop_amount=1366.50
+
+    instance_id = request.args['instance_id']
+
+    instance_name = request.args['instance_name'].upper()
+    drop_amount = request.args['drop_amount']
 
     jackpot = JackPotIndex(
-        instance_epic=instance_epic,
-        instance_major=instance_major,
-        instance_minor=instance_minor,
-        drop_amount_epic=drop_amount_epic,
-        drop_amount_major=drop_amount_major,
-        drop_amount_minor=drop_amount_minor
+        instance_id=instance_id,
+        instance_name=instance_name,
+        drop_amount=drop_amount,
     )
     try:
         db.session.add(jackpot)
@@ -180,100 +131,105 @@ def add_jackpot_instance():
     return jsonify(response)
 
 
-@app.route('/add_jackpot_data')
-def add_jackpot_data():
-    # http://0.0.0.0:8000/add_jackpot_data?epic_data=9606.97726592&major_data=4276.03998086&minor_data=850.72016905&index_id=1
-    epic_data = request.args['epic_data']
-    major_data = request.args['major_data']
-    minor_data = request.args['minor_data']
-    index_id = request.args['index_id']
-    # Check if the item exist if not update the data
-
-    # existing_provider = Provider.query.get(1)  # or whatever
-    # # update the rssfeed column
-    # existing_provider.rssfeed = form.rssfeed.data
-    # db.session.commit()
-
-    jackpot = JackPotData.query.filter_by(index_id=index_id).first()
-    if jackpot:
-        jackpot.epic_data = epic_data
-        jackpot.major_data = major_data
-        jackpot.minor_data = minor_data
-        jackpot.updated_date = datetime.now()
-
-    else:
-        jackpot = JackPotData(
-            epic_data=epic_data,
-            major_data=major_data,
-            minor_data=minor_data,
-            index_id=index_id,
-            updated_date=datetime.now()
-
-        )
-    db.session.add(jackpot)
-    db.session.commit()
-
-    try:
-        db.session.add(jackpot)
-        db.session.commit()
-        message = '{} Jackpot id'.format(jackpot.id)
-    except Exception as e:
-        message = e
-    response = {
-        'status': True,
-        'message': message,
-    }
-    return jsonify(response)
-
-
 @app.route('/get_jackpot_history')
 def get_jackpot_history():
     # http://0.0.0.0:8000/add_jackpot_instance?instance_epic=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_major=f857f635-df85-44a6-b19b-692a52ca74c6&instance_minor=9df7b3b2-dec3-4a08-8991-e38e956a0aea&drop_amount_epic=13542.50&drop_amount_major=4514.10&drop_amount_minor=1354.23
-    data_id = request.args['id']
+    instance_name = request.args['instance_name']
 
-    all_history = JackPotDataHistory.query.filter_by(jack_pot_data=data_id).order_by(JackPotDataHistory.updated_date.desc()).all()
+    jackpots = JackPotIndex.query.filter_by(instance_name=instance_name).order_by(JackPotIndex.last_updated_at.desc()).all()
 
-    epic = []
-    major = []
-    minor = []
-    for obj in all_history:
-        epic_data = obj.epic_data
-        major_data = obj.major_data
-        minor_data = obj.minor_data
+    jackpot_data = []
 
-        updated_date = obj.updated_date
-        updated_date_natural = humanize.naturaltime(updated_date)
-        if epic_data:
-            if epic_data not in [i['data'] for i in epic]:
-                epic.append({
-                    'data': epic_data,
-                    'date': updated_date,
-                    'date_natural': updated_date_natural,
-                })
+    for jackpot in jackpots:
+        instance_id = jackpot.instance_id
+        instance_name = jackpot.instance_name
+        drop_amount = jackpot.drop_amount
+        data = jackpot.data
+        is_closed = jackpot.is_closed
+        last_updated_at = jackpot.last_updated_at
+        tracking_started_at = jackpot.indexed_date
+        notified = jackpot.notified
 
-        if major_data:
-            if major_data not in [i['data'] for i in major]:
-                major.append({
-                    'data': major_data,
-                    'date': updated_date,
-                    'date_natural': updated_date_natural,
-                })
+        jackpot_data.append({
+            'instance_id': instance_id,
+            'instance_name': instance_name,
+            'drop_amount': drop_amount,
+            'data': data,
+            'tracking_started_at': str(tracking_started_at).split('.')[0],
+            'tracking_started_at_natural': humanize.naturaltime(tracking_started_at),
+            'status': is_closed,
+            'notified': notified,
+            'last_updated_at': str(last_updated_at).split('.')[0],
+            'last_updated_at_natural': humanize.naturaltime(last_updated_at),
 
-        if minor_data:
-            if minor_data not in [i['data'] for i in minor]:
-                minor.append({
-                    'data': minor_data,
-                    'date': updated_date,
-                    'date_natural': updated_date_natural,
-                })
+        })
 
-    epic = sorted(epic, key=lambda k: k['data'], reverse=True)
+    return render_template('history.html', jackpot_data=jackpot_data, instance_name=instance_name)
 
-    major = sorted(major, key=lambda k: k['data'], reverse=True)
 
-    minor = sorted(minor, key=lambda k: k['data'], reverse=True)
+@app.route('/toggle_notification')
+def toggle_notification():
+    # http://0.0.0.0:8000/add_jackpot_instance?instance_epic=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_major=f857f635-df85-44a6-b19b-692a52ca74c6&instance_minor=9df7b3b2-dec3-4a08-8991-e38e956a0aea&drop_amount_epic=13542.50&drop_amount_major=4514.10&drop_amount_minor=1354.23
+    instance_id = request.args['instance_id']
 
-    return render_template('history.html', epic=epic, major=major, minor=minor)
+    jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).first()
+    jackpot.notified = not jackpot.notified
+    db.session.add(jackpot)
+    db.session.commit()
+    return redirect('/')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    count = Settings.query.count()
+    if count == 0:
+        setting = Settings(
+            emails='',
+            epic_threshold=0,
+            major_threshold=0,
+            minor_threshold=0,
+        )
+
+        db.session.add(setting)
+        db.session.commit()
+
+    if request.method == 'POST':
+        setting = Settings.query.first()
+        emails = request.values.get('email', '')
+        try:
+            epic_threshold = float(request.values.get('epic', ''))
+        except:
+            epic_threshold = 0
+
+        try:
+            major_threshold = float(request.values.get('major', ''))
+        except:
+            major_threshold = 0
+
+        try:
+            minor_threshold = float(request.values.get('minor', ''))
+        except:
+            minor_threshold = 0
+        setting.emails = emails
+        setting.epic_threshold = epic_threshold
+        setting.major_threshold = major_threshold
+        setting.minor_threshold = minor_threshold
+        db.session.add(setting)
+        db.session.commit()
+
+    setting = Settings.query.first()
+
+    emails = setting.emails
+    epic_threshold = setting.epic_threshold
+    major_threshold = setting.major_threshold
+    minor_threshold = setting.minor_threshold
+    data = {
+        'emails': emails,
+        'epic_threshold': epic_threshold,
+        'major_threshold': major_threshold,
+        'minor_threshold': minor_threshold,
+    }
+    return render_template('settings.html', data=data)
 
 
 if __name__ == "__main__":
