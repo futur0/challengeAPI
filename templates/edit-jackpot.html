@@ -3,7 +3,7 @@
 
 <head>
     <title>
-        Jackpot Tracker
+        Jackpot Tracker - Edit Jackpot
     </title>
     <!-- HTML5 Shim and Respond.js IE10 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -64,7 +64,7 @@
                 <li class="nav-item pcoded-menu-caption">
                     <label>Navigation</label>
                 </li>
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+                <li data-username=""
                     class="nav-item ">
                     <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
                 </li>
@@ -76,15 +76,18 @@
                         <li class=""><a href="" class="/get_jackpot_history?instance_name=MINOR">Minor</a></li>
                     </ul>
                 </li>
+
                 <li data-username=""
                     class="nav-item ">
                     <a href="/add_jackpot" class="nav-link "><span class="pcoded-micon"><i class="feather icon-plus-square"></i></span><span class="pcoded-mtext">Add Jackpot</span></a>
                 </li>
 
+
                 <li data-username=""
                     class="nav-item ">
                     <a href="/settings" class="nav-link "><span class="pcoded-micon"><i class="feather icon-settings"></i></span><span class="pcoded-mtext">Settings</span></a>
                 </li>
+
 
             </ul>
         </div>
@@ -120,82 +123,64 @@
 
                             <!-- [ Hover-table ] start -->
                             <div class="col-xl-12">
-                                {% for data in jackpot_data %}
                                 <div class="card">
                                     <div class="float-left">
-                                        <h5 class="card-header text-left float-left">{{data['instance_name']}} / NetBet / Book Of Relics</h5>
-                                        <div class="float-right">
-                                            {% if data.status %}
-                                            <svg width="5em" height="5em" viewBox="0 0 16 16" class="bi bi-check" fill="green" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                      d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z"/>
-                                            </svg>
-                                            {% else %}
-                                            <div class="float-right">
-                                                <div class="spinner-grow text-warning float-right" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                                </div>
-
-
-                                            </div>
-                                            {% endif %}
-                                        </div>
+                                        <h5 class="card-header text-left float-left">Edit Jackpot For tracking</h5>
                                     </div>
 
                                     <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form method="POST">
+                                                    <div class="form-group">
+                                                        <label for="book">JackPot Type</label>
+                                                        <select class="form-control" id="jackpot-type" name="jackpot-type" disabled>
+                                                            <option selected>{{data['instance_name']}}</option>
 
-                                        <p class="card-text"><b>Drop Amount:</b> {{data['drop_amount']}} <br>
-                                            <b>Last Updated Data:</b> {{data['data']}} <br>
-                                        </p>
-                                        <a href="/get_jackpot_history?instance_name={{data['instance_name']}}" target="_blank" class="btn btn-sm  btn-success float-left">{{data['instance_name']}}
-                                            History</a>
-                                        <a class="btn btn-sm btn-rounded btn-{% if data['notified'] == False %}success{% else %}danger{% endif %}"
-                                           href="/toggle_notification?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Click to change status">
-                                            Notified: {% if data['notified'] == True %}YES{% else %}NO{% endif %}
-                                        </a>
-
-                                        <a class="btn btn-sm btn-rounded btn-info float-right"
-                                           href="/edit_jackpot?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Edit Jackpot details">
-                                            Edit Jackpot
-                                        </a>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="epic">Jackpot Drop Amount</label>
+                                                        <input name="drop-amount" type="text" class="form-control" id="drop-amount" placeholder="Drop Amount" value="{{data['drop_amount']}}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="major">Instance ID</label>
+                                                        <input name="instance-id" type="text" class="form-control" id="instance-id" placeholder="Instance ID" value="{{data['instance_id']}}">
+                                                    </div>
 
 
-                                        <a class="btn btn-sm btn-rounded btn-danger float-right"
-                                           href="/delete_jackpot?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Remove jakpot from tracking">
-                                            Delete Jackpot
-                                        </a>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </form>
+                                            </div>
 
+
+                                        </div>
+                                        <small class="card-footer text-muted">
+
+                                        </small>
                                     </div>
-                                    <small class="card-footer text-muted">
-                                        Last Updated : {{data['last_updated_at_natural']}}
-                                        <br>
-                                        Tracking Started : {{data['tracking_started_at']}}({{data['tracking_started_at_natural']}})
-
-                                    </small>
                                 </div>
-                                {% endfor %}
+                                <!-- [ Hover-table ] end -->
+
+
                             </div>
-                            <!-- [ Hover-table ] end -->
-
-
+                            <!-- [ Main Content ] end -->
                         </div>
-                        <!-- [ Main Content ] end -->
                     </div>
                 </div>
             </div>
+
         </div>
-
     </div>
-</div>
 
 
-<!-- Required Js -->
-<script src="/static/assets/js/vendor-all.min.js"></script>
-<script src="/static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-<script src="/static/assets/js/pcoded.min.js"></script>
+    <!-- Required Js -->
+    <script src="/static/assets/js/vendor-all.min.js"></script>
+    <script src="/static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/assets/js/pcoded.min.js"></script>
 
 
-<!-- Specific Page JS goes HERE  -->
+    <!-- Specific Page JS goes HERE  -->
 
 
 </body>
