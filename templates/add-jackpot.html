@@ -3,7 +3,7 @@
 
 <head>
     <title>
-        Jackpot Tracker - History
+        Jackpot Tracker - Settings
     </title>
     <!-- HTML5 Shim and Respond.js IE10 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -30,6 +30,9 @@
     <!-- vendor css -->
     <link rel="stylesheet" href="/static/assets/css/style.css">
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+
     <!-- Specific CSS goes HERE -->
 
 
@@ -52,7 +55,7 @@
                 <div class="b-bg">
                     <i class="feather icon-zap"></i>
                 </div>
-                <span class="b-title">Jackpot Tracker</span>
+                <span class="b-title">Jackpot Tracker - Settings</span>
             </a>
             <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
         </div>
@@ -61,21 +64,22 @@
                 <li class="nav-item pcoded-menu-caption">
                     <label>Navigation</label>
                 </li>
-                <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+                <li data-username=""
                     class="nav-item ">
                     <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
                 </li>
                 <li data-username="History" class="nav-item pcoded-hasmenu">
-                    <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-"></i></span><span class="pcoded-mtext">History</span></a>
+                    <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-lock"></i></span><span class="pcoded-mtext">History</span></a>
                     <ul class="pcoded-submenu">
                         <li class=""><a href="/get_jackpot_history?instance_name=EPIC" class="">EPIC</a></li>
                         <li class=""><a href="/get_jackpot_history?instance_name=MAJOR" class="">Major</a></li>
                         <li class=""><a href="" class="/get_jackpot_history?instance_name=MINOR">Minor</a></li>
                     </ul>
                 </li>
+
                 <li data-username=""
                     class="nav-item ">
-                    <a href="/add_jackpot" class="nav-link "><span class="pcoded-micon"><i class="feather icon-plus-square"></i></span><span class="pcoded-mtext">Add Jackpot</span></a>
+                    <a href="/add_jackpot" class="nav-link "><span class="pcoded-micon"><i class="feather icon-plus-square"></i></span><span class="pcoded-mtext">Settings</span></a>
                 </li>
 
 
@@ -83,17 +87,6 @@
                     class="nav-item ">
                     <a href="/settings" class="nav-link "><span class="pcoded-micon"><i class="feather icon-settings"></i></span><span class="pcoded-mtext">Settings</span></a>
                 </li>
-
-                <!--                <li class="nav-item pcoded-menu-caption">-->
-                <!--                    <label>Pages</label>-->
-                <!--                </li>-->
-                <!--                <li data-username="Authentication Sign up Sign in reset password Change password Personal information profile settings map form subscribe" class="nav-item pcoded-hasmenu">-->
-                <!--                    <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-lock"></i></span><span class="pcoded-mtext">Authentication</span></a>-->
-                <!--                    <ul class="pcoded-submenu">-->
-                <!--                        <li class=""><a href="/auth-reset-pass.html" class="">Reset Pass</a></li>-->
-                <!--                        <li class=""><a href=/register/ class="">Register</a></li>-->
-                <!--                    </ul>-->
-                <!--                </li>-->
 
 
             </ul>
@@ -114,7 +107,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">History For this instance</h5>
+                                    <h5 class="m-b-10">Jackpot Tracer</h5>
                                 </div>
                             </div>
                         </div>
@@ -131,50 +124,43 @@
                             <!-- [ Hover-table ] start -->
                             <div class="col-xl-12">
                                 <div class="card">
-                                    <div class="card-header">
-
-
-                                        <br>
-                                        <h4>Book Of Relics - NetBet - EPIC</h4> <br>
-
+                                    <div class="float-left">
+                                        <h5 class="card-header text-left float-left">Add New Jackpot For tracking</h5>
                                     </div>
-                                    <div class="card-block table-border-style ">
-                                        <div class="table-responsive table-bordered">
-                                            <table class="table ">
-                                                <thead class="thead-dark">
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>Drop Amount</th>
-                                                    <th>Data</th>
-                                                    <th>Tracking Started</th>
-                                                    <th>Last Update</th>
-                                                    <th>Is Final</th>
-                                                    <th>Notified</th>
 
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {% for data in jackpot_data %}
-                                                <tr>
-                                                    <td> {{data['instance_name']}}</td>
-                                                    <td>{{data['drop_amount']}}</td>
-                                                    <td>{{data['data']}}</td>
-                                                    <td>{{data['tracking_started_at']}}</td>
-                                                    <td>{{data['last_updated_at']}}</td>
-                                                    <td>{{data['status']}}</td>
-                                                    <td>{{data['notified']}}</td>
-                                                    <!--                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>-->
-                                                </tr>
-                                                {% endfor %}
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form action="/add_jackpot" method="POST">
+                                                    <div class="form-group">
+                                                        <label for="book">JackPot Type</label>
+                                                        <select class="form-control" id="jackpot-type" name="jackpot-type">
+                                                            <option>EPIC</option>
+                                                            <option>MAJOR</option>
+                                                            <option>MINOR</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="epic">Jackpot Drop Amount</label>
+                                                        <input name="drop-amount" type="text" class="form-control" id="drop-amount" placeholder="Drop Amount">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="major">Instance ID</label>
+                                                        <input name="instance-id" type="text" class="form-control" id="instance-id" placeholder="Instance ID">
+                                                    </div>
 
 
-                                                </tbody>
-                                            </table>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </form>
+                                            </div>
+
+
                                         </div>
+                                        <small class="card-footer text-muted">
+
+                                        </small>
                                     </div>
                                 </div>
-
-
                                 <!-- [ Hover-table ] end -->
 
 
