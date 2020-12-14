@@ -103,7 +103,7 @@ def add_jackpot_instance():
     # &drop_amount_major=
     # &drop_amount_minor=
 
-    # http://0.0.0.0:8000/add_jackpot_instance?instance_id=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_name=EPIC&drop_amount=13665.00
+    # http://0.0.0.0:8000
     # http://0.0.0.0:8000/add_jackpot_instance?instance_id=bcdbc277-a35d-465a-97b4-4ea2476ab874&instance_name=MAJOR&drop_amount=4555.00
 
     # http://0.0.0.0:8000/add_jackpot_instance?instance_id=9df7b3b2-dec3-4a08-8991-e38e956a0aea&instance_name=MINOR&drop_amount=1366.50
@@ -128,12 +128,11 @@ def add_jackpot_instance():
         'status': True,
         'message': message,
     }
-    return jsonify(response)
+    return redirect('/')
 
 
 @app.route('/get_jackpot_history')
 def get_jackpot_history():
-    # http://0.0.0.0:8000/add_jackpot_instance?instance_epic=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_major=f857f635-df85-44a6-b19b-692a52ca74c6&instance_minor=9df7b3b2-dec3-4a08-8991-e38e956a0aea&drop_amount_epic=13542.50&drop_amount_major=4514.10&drop_amount_minor=1354.23
     instance_name = request.args['instance_name']
 
     jackpots = JackPotIndex.query.filter_by(instance_name=instance_name).order_by(JackPotIndex.last_updated_at.desc()).all()
@@ -169,12 +168,20 @@ def get_jackpot_history():
 
 @app.route('/toggle_notification')
 def toggle_notification():
-    # http://0.0.0.0:8000/add_jackpot_instance?instance_epic=6f4a2200-8b9f-4482-82ee-8651078ab84f&instance_major=f857f635-df85-44a6-b19b-692a52ca74c6&instance_minor=9df7b3b2-dec3-4a08-8991-e38e956a0aea&drop_amount_epic=13542.50&drop_amount_major=4514.10&drop_amount_minor=1354.23
     instance_id = request.args['instance_id']
 
     jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).first()
     jackpot.notified = not jackpot.notified
     db.session.add(jackpot)
+    db.session.commit()
+    return redirect('/')
+
+
+@app.route('/delete_jackpot')
+def delete_jackpot():
+    instance_id = request.args['instance_id']
+    jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).delete()
+    # db.session.add(jackpot)
     db.session.commit()
     return redirect('/')
 
@@ -230,6 +237,31 @@ def settings():
         'minor_threshold': minor_threshold,
     }
     return render_template('settings.html', data=data)
+
+
+@app.route('/add_jackpot', methods=['GET', 'POST'])
+def add_jackpot():
+    if request.method == 'POST':
+        jackpot_type = request.values.get('jackpot-type', '')
+        drop_amount = request.values.get('drop-amount', '')
+        instance_id = request.values.get('instance-id', '')
+        url = '/add_jackpot_instance?instance_id={}&instance_name={}&drop_amount={}'.format(instance_id, jackpot_type, drop_amount)
+        return redirect(url)
+    else:
+        return render_template('add-jackpot.html')
+
+    # setting = Settings.query.first()
+    #
+    # emails = setting.emails
+    # epic_threshold = setting.epic_threshold
+    # major_threshold = setting.major_threshold
+    # minor_threshold = setting.minor_threshold
+    # data = {
+    #     'emails': emails,
+    #     'epic_threshold': epic_threshold,
+    #     'major_threshold': major_threshold,
+    #     'minor_threshold': minor_threshold,
+    # }
 
 
 if __name__ == "__main__":
