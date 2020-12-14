@@ -177,12 +177,29 @@ def toggle_notification():
     return redirect('/')
 
 
-@app.route('/delete_jackpot')
-def delete_jackpot():
-    instance_id = request.args['instance_id']
-    jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).delete()
-    # db.session.add(jackpot)
-    db.session.commit()
+@app.route('/edit_jackpot', methods=['GET', 'POST'])
+def edit_jackpot():
+    if request.method == 'POST':
+        instance_id = request.values.get('instance-id', '')
+        drop_amount = float(request.values.get('drop-amount', ''))
+        jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).first()
+        jackpot.drop_amount = drop_amount
+        db.session.add(jackpot)
+        db.session.commit()
+        return redirect('/')
+
+    else:
+        instance_id = request.args['instance_id']
+        jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).first()
+        drop_amount = jackpot.drop_amount
+        instance_name = jackpot.instance_name
+        data = {
+            'instance_id': instance_id,
+            'drop_amount': drop_amount,
+            'instance_name': instance_name,
+        }
+        return render_template('edit-jackpot.html', data=data)
+
     return redirect('/')
 
 
@@ -249,19 +266,6 @@ def add_jackpot():
         return redirect(url)
     else:
         return render_template('add-jackpot.html')
-
-    # setting = Settings.query.first()
-    #
-    # emails = setting.emails
-    # epic_threshold = setting.epic_threshold
-    # major_threshold = setting.major_threshold
-    # minor_threshold = setting.minor_threshold
-    # data = {
-    #     'emails': emails,
-    #     'epic_threshold': epic_threshold,
-    #     'major_threshold': major_threshold,
-    #     'minor_threshold': minor_threshold,
-    # }
 
 
 if __name__ == "__main__":
