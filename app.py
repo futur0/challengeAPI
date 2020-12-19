@@ -128,6 +128,8 @@ def add_jackpot_instance():
         'status': True,
         'message': message,
     }
+
+    print(response)
     return redirect('/')
 
 
