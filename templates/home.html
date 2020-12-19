@@ -147,16 +147,16 @@
                                         <p class="card-text"><b>Drop Amount:</b> {{data['drop_amount']}} <br>
                                             <b>Last Updated Data:</b> {{data['data']}} <br>
                                         </p>
-<!--                                        <a href="/get_jackpot_history?instance_name={{data['instance_name']}}" target="_blank" class="btn btn-sm  btn-success float-left">{{data['instance_name']}}-->
-<!--                                            History</a>-->
+                                        <!--                                        <a href="/get_jackpot_history?instance_name={{data['instance_name']}}" target="_blank" class="btn btn-sm  btn-success float-left">{{data['instance_name']}}-->
+                                        <!--                                            History</a>-->
                                         <a class="btn btn-sm btn-rounded btn-{% if data['notified'] == False %}success{% else %}danger{% endif %}"
                                            href="/toggle_notification?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Click to change status">
                                             Notified: {% if data['notified'] == True %}YES{% else %}NO{% endif %}
                                         </a>
 
                                         <a class="btn btn-sm btn-rounded btn-{% if data['status'] == False %}success{% else %}danger{% endif %}"
-                                           href="/toggle_jackpot?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Click to change status">
-                                            Tracked: {% if data['status'] == True %}NO{% else %}YES{% endif %}
+                                           href="/toggle_jackpot?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Mark As Completed">
+                                            Remove Tracking
                                         </a>
 
                                         <a class="btn btn-sm btn-rounded btn-info float-right"
