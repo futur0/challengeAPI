@@ -66,7 +66,7 @@
                     <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
                 </li>
                 <li data-username="History" class="nav-item pcoded-hasmenu">
-                    <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-"></i></span><span class="pcoded-mtext">History</span></a>
+                    <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-lock"></i></span><span class="pcoded-mtext">History</span></a>
                     <ul class="pcoded-submenu">
                         <li class=""><a href="/get_jackpot_history?instance_name=EPIC" class="">EPIC</a></li>
                         <li class=""><a href="/get_jackpot_history?instance_name=MAJOR" class="">Major</a></li>
@@ -114,7 +114,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">History For this instance</h5>
+                                    <h5 class="m-b-10">History For {{instance_name}}</h5>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
 
 
                                         <br>
-                                        <h4>Book Of Relics - NetBet - EPIC</h4> <br>
+                                        <h4>Book Of Relics - NetBet - {{instance_name}}</h4> <br>
 
                                     </div>
                                     <div class="card-block table-border-style ">
@@ -150,6 +150,7 @@
                                                     <th>Last Update</th>
                                                     <th>Is Final</th>
                                                     <th>Notified</th>
+                                                    <th>ID</th>
 
                                                 </tr>
                                                 </thead>
@@ -163,6 +164,7 @@
                                                     <td>{{data['last_updated_at']}}</td>
                                                     <td>{{data['status']}}</td>
                                                     <td>{{data['notified']}}</td>
+                                                    <td>{{data['instance_id']}}</td>
                                                     <!--                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>-->
                                                 </tr>
                                                 {% endfor %}

@@ -8,7 +8,7 @@ db = SQLAlchemy()
 class JackPotIndex(db.Model):
     __tablename__ = 'jackpotindex'
     id = db.Column(db.Integer, primary_key=True)
-    instance_id = db.Column(db.String(80), unique=True, nullable=True)
+    instance_id = db.Column(db.String(80), unique=False, nullable=True)
     instance_name = db.Column(db.String(80), unique=False, nullable=True)
     drop_amount = db.Column(db.Float(), unique=False, nullable=True)
     data = db.Column(db.Float(), unique=False, nullable=True)
