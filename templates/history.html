@@ -162,7 +162,13 @@
                                                     <td>{{data['data']}}</td>
                                                     <td>{{data['tracking_started_at']}}</td>
                                                     <td>{{data['last_updated_at']}}</td>
-                                                    <td>{{data['status']}}</td>
+                                                    <td><a class="btn btn-sm btn-rounded btn-{% if data['status'] == False %}success{% else %}danger{% endif %}"
+                                                           href="/toggle_jackpot?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Click to change status">
+                                                        {% if data['status'] == True %}Yes{% else %}No{% endif %}
+                                                    </a>
+                                                    </td>
+
+
                                                     <td>{{data['notified']}}</td>
                                                     <td>{{data['instance_id']}}</td>
                                                     <!--                                                    <td><a href="/get_history?id={{data['instance_epic']}}" target="_blank">Goto</a></td>-->

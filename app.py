@@ -179,6 +179,18 @@ def toggle_notification():
     return redirect('/')
 
 
+
+@app.route('/toggle_jackpot')
+def toggle_jackpot():
+    instance_id = request.args['instance_id']
+
+    jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).first()
+    jackpot.is_closed = not jackpot.is_closed
+    db.session.add(jackpot)
+    db.session.commit()
+    return redirect('/')
+
+
 @app.route('/edit_jackpot', methods=['GET', 'POST'])
 def edit_jackpot():
     if request.method == 'POST':
