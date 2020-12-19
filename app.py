@@ -203,6 +203,16 @@ def edit_jackpot():
     return redirect('/')
 
 
+@app.route('/delete_jackpot', methods=['GET', 'POST'])
+def delete_jackpot():
+    instance_id = request.args['instance_id']
+
+    jackpot = JackPotIndex.query.filter_by(instance_id=instance_id).delete()
+    db.session.commit()
+
+    return redirect('/')
+
+
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     count = Settings.query.count()
