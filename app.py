@@ -29,7 +29,6 @@ db.init_app(app)
 # TO create the database
 # with app.app_context():db.create_all()
 
-
 #
 
 @app.route('/')
