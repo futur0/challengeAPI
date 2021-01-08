@@ -9,22 +9,25 @@ from configs.models import db
 
 APP_ENV = os.environ.get('APP_ENV', 'PRD')
 PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
+DB_HOST = config[APP_ENV]['DB_HOST']
+DB_NAME = config[APP_ENV]['DB_NAME']
+DB_USER = config[APP_ENV]['DB_USER']
+DB_PASSWORD = config[APP_ENV]['DB_PASSWORD']
+
 print(PROJECT_PATH)
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{PROJECT_PATH}/database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 
 app.config['SECRET_KEY'] = '38c12fd78e53488da82c1e27003c2030'
 
 db.init_app(app)
 
-if not os.path.exists(f'{PROJECT_PATH}/database.db'):
-    print('No Data Base file found')
-    # TO create the database
-    with app.app_context():
-        db.create_all()
+
+# TO create the database
+# with app.app_context():db.create_all()
 
 
 #
@@ -177,7 +180,6 @@ def toggle_notification():
     db.session.add(jackpot)
     db.session.commit()
     return redirect('/')
-
 
 
 @app.route('/toggle_jackpot')

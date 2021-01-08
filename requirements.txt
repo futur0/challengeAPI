@@ -4,3 +4,4 @@ requests
 Flask-SQLAlchemy
 humanize
 sendgrid
+mysqlclient

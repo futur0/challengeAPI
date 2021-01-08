@@ -3,19 +3,19 @@ config = {
     'DEV': {
         'PROJECT_PATH': '/home/noobie/projects/freelancing/pph_betting_automtion_june_15_2020/jackpot_monitor_and_alert',
         'DB_HOST': 'localhost',
-        'DB_NAME': 'automation',
-        'DB_USER': 'automation',
-        'DB_PASSWORD': 'automation',
+        'DB_NAME': 'jackpot_tracker',
+        'DB_USER': 'jackpot_admin',
+        'DB_PASSWORD': 'daljHljHHU@jH!j',
 
         'DOMAIN': 'http://localhost:8000',
     },
 
     'PRD': {
-        'PROJECT_PATH': '/home/amitupreti/jackpot-tracker',
+        'PROJECT_PATH': '/home/ubuntu/jackpot-tracker',
         'DB_HOST': 'localhost',
-        'DB_NAME': 'automation1',
-        'DB_USER': 'automation',
-        'DB_PASSWORD': 'd2B6BA3bc;<}p+!>',
+        'DB_NAME': 'jackpot_tracker',
+        'DB_USER': 'jackpot_admin',
+        'DB_PASSWORD': '2WES9B5aIJnS90',
 
         'DOMAIN': 'http://34.89.31.154:8000',
 
