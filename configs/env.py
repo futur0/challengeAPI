@@ -12,7 +12,7 @@ config = {
 
     'PRD': {
         'PROJECT_PATH': '/home/amitupreti/jackpot-tracker',
-        'DB_HOST': 'testdatabase.ciukufcbqlcy.us-east-2.rds.amazonaws.com',
+        'DB_HOST': '34.68.156.90',
         'DB_NAME': 'jackpot_tracker',
         'DB_USER': 'jackpot_admin',
         'DB_PASSWORD': '2WES9B5aIJnS90',
