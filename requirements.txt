@@ -5,3 +5,4 @@ Flask-SQLAlchemy
 humanize
 sendgrid
 mysqlclient
+gunicorn
