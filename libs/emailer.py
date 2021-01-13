@@ -31,7 +31,6 @@ class Emailer:
             self.subject = f'Low Balance Alert | {crawler_ended_utc}'
 
         # excel sheet to email
-
         # logger
 
     def send_email(self):
