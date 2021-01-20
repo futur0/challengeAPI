@@ -1,10 +1,28 @@
 # To be run every few minutes
+import os
 from datetime import datetime
 from time import sleep
 
 from app import app, db
-from configs.models import JackPotIndex
+from configs.models import JackPotIndex, Settings
+from configs.env import config
+
 from libs.utils import load_instance, check_time
+from libs.emailer import Emailer
+
+
+APP_ENV = os.environ.get('APP_ENV', 'PRD')
+
+DOMAIN = config[APP_ENV]['DOMAIN']
+
+MESAGE_TEMPLATE = '''Hi {name}, <br>
+                    
+                                The Jackpot {instance_name} has been completed.. <br>
+                                
+                                Please add a new one. {url}
+                                Book Of Relics <br>
+                                NetBet 
+                            '''
 
 
 def refresh_current_instance():
@@ -33,10 +51,26 @@ def refresh_current_instance():
                 active_instance.is_closed = True
                 db.session.add(active_instance)
                 db.session.commit()
-                print('Turning off  Status for {}'.format(instance_id))
+                # send email
+                setting = Settings.query.first()
+                emails = setting.emails.split(',')
+                print('Turning off  Status for {} and notitying'.format(instance_id))
+                print('Threshold touched for {}. Sending Email'.format(instance_name))
+                for email in emails:
+                    username = email.split('@')[0]
+                    subject = '{instance_name} | Book Of Relics | NetBet'.format(instance_name=instance_name)
+                    message = MESAGE_TEMPLATE.format(
+                        name=username,
+                        instance_name=instance_name,
+                        url=DOMAIN+'/add_jackpot',
+
+
+                    )
+                    print(message)
+                    emailer = Emailer(email=email, message=message, subject=subject)
+                    emailer.send_email()
                 continue
             else:
-
                 if data != result:
                     active_instance.data = result
                     active_instance.last_updated_at = datetime.now()

@@ -17,7 +17,7 @@ config = {
         'DB_USER': 'jackpot_admin',
         'DB_PASSWORD': '2WES9B5aIJnS90',
 
-        'DOMAIN': 'http://34.72.48.59:8000',
+        'DOMAIN': 'http://34.72.48.59',
 
     },
 

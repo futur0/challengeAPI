@@ -15,10 +15,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="description"
-          content="Jackpot Private Website"/>
-    <meta name="keywords"
-          content="Jackpot"/>
+    <meta name="description" content="Jackpot Private Website"/>
+    <meta name="keywords" content="Jackpot"/>
     <meta name="author" content="Tracker"/>
 
     <!-- Favicon icon -->
@@ -51,7 +49,7 @@
 <nav class="pcoded-navbar navbar-collapsed">
     <div class="navbar-wrapper">
         <div class="navbar-brand header-logo">
-            <a target="_blank" href="#" class="b-brand">
+            <a  href="#" class="b-brand">
                 <div class="b-bg">
                     <i class="feather icon-zap"></i>
                 </div>
@@ -144,7 +142,7 @@
 
                                     <div class="card-body">
 
-                                        <p class="card-text"><b>Drop Amount:</b> {{data['drop_amount']}} <br>
+                                        <p class="card-text"><b>Must Drop By:</b> {{data['drop_amount']}} <br>
                                             <b>Last Updated Data:</b> {{data['data']}} <br>
                                         </p>
                                         <!--                                        <a href="/get_jackpot_history?instance_name={{data['instance_name']}}" target="_blank" class="btn btn-sm  btn-success float-left">{{data['instance_name']}}-->
@@ -155,8 +153,8 @@
                                         </a>
 
                                         <a class="btn btn-sm btn-rounded btn-{% if data['status'] == False %}success{% else %}danger{% endif %}"
-                                           href="/toggle_jackpot?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Mark As Completed">
-                                            Remove Tracking
+                                           href="/toggle_jackpot?instance_id={{data['instance_id']}}" data-toggle="tooltip" data-placement="top" title="Stopping Tracking this jackpot">
+                                            End Tracking
                                         </a>
 
                                         <a class="btn btn-sm btn-rounded btn-info float-right"

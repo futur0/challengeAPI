@@ -7,7 +7,7 @@ from configs.env import config
 from configs.models import JackPotIndex, Settings
 from configs.models import db
 
-APP_ENV = os.environ.get('APP_ENV', 'PRD')
+APP_ENV = os.environ.get('APP_ENV', 'DEV')
 PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
 DB_HOST = config[APP_ENV]['DB_HOST']
 DB_NAME = config[APP_ENV]['DB_NAME']

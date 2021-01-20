@@ -81,3 +81,6 @@ def check_for_price_change():
 
 if __name__ == '__main__':
     check_for_price_change()
+
+
+# Run every minute
