@@ -57,6 +57,8 @@ def check_for_price_change():
                 threshold = minor_threshold
 
             if data >= threshold:
+                if threshold == 0:
+                    continue
                 increased_data = drop_amount - threshold
                 print('Threshold touched for {}. Sending Email'.format(instance_name))
                 for email in emails:
@@ -81,6 +83,5 @@ def check_for_price_change():
 
 if __name__ == '__main__':
     check_for_price_change()
-
 
 # Run every minute
