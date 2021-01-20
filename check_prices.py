@@ -59,7 +59,7 @@ def check_for_price_change():
             if data >= threshold:
                 if threshold == 0:
                     continue
-                increased_data = drop_amount - threshold
+                increased_data = data - threshold
                 print('Threshold touched for {}. Sending Email'.format(instance_name))
                 for email in emails:
                     username = email.split('@')[0]

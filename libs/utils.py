@@ -67,7 +67,7 @@ def load_instance(instance_id):
             ('instance', instance_id),
             ('currency', 'GBP'),
         )
-        print('Loading Minor')
+        # print('Loading Minor')
         response = requests.get('https://jackpot-query-mt.nyxop.net/v3/jackpots', headers=headers, params=params)
         print('Ok Loaded')
         result = None
