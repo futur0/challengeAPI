@@ -61,7 +61,7 @@ def load_instance(instance_id):
     }
 
     output = {'epic': '', 'minor': '', 'major': ''}
-
+    result = 0
     try:
         params = (
             ('instance', instance_id),
@@ -69,8 +69,10 @@ def load_instance(instance_id):
         )
         # print('Loading Minor')
         response = requests.get('https://jackpot-query-mt.nyxop.net/v3/jackpots', headers=headers, params=params)
+        if 'instance is inactive' in response.text:
+            return 'Closed'
         print('Ok Loaded')
-        result = None
+
         data = json.loads(response.text)['jackpots'][0]
         result = data['balanceAmountInRequestedCurrency']
         print(result)

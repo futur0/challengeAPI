@@ -10,7 +10,6 @@ from configs.env import config
 from libs.utils import load_instance, check_time
 from libs.emailer import Emailer
 
-
 APP_ENV = os.environ.get('APP_ENV', 'PRD')
 
 DOMAIN = config[APP_ENV]['DOMAIN']
@@ -47,7 +46,7 @@ def refresh_current_instance():
 
             result = load_instance(instance_id)
 
-            if result == None:
+            if result == 'Closed':
                 active_instance.is_closed = True
                 db.session.add(active_instance)
                 db.session.commit()
@@ -62,16 +61,14 @@ def refresh_current_instance():
                     message = MESAGE_TEMPLATE.format(
                         name=username,
                         instance_name=instance_name,
-                        url=DOMAIN+'/add_jackpot',
-
-
+                        url=DOMAIN + '/add_jackpot',
                     )
                     print(message)
                     emailer = Emailer(email=email, message=message, subject=subject)
                     emailer.send_email()
                 continue
-            else:
-                if data != result:
+            elif result != 0:
+                if result > data:
                     active_instance.data = result
                     active_instance.last_updated_at = datetime.now()
                     db.session.add(active_instance)
