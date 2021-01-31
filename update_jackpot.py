@@ -68,7 +68,8 @@ def refresh_current_instance():
                     emailer.send_email()
                 continue
             elif result != 0:
-                if result > data:
+
+                if result > data or data == None:
                     active_instance.data = result
                     active_instance.last_updated_at = datetime.now()
                     db.session.add(active_instance)
