@@ -10,7 +10,7 @@ from configs.env import config
 from libs.utils import load_instance, check_time
 from libs.emailer import Emailer
 
-APP_ENV = os.environ.get('APP_ENV', 'PRD')
+APP_ENV = os.environ.get('APP_ENV', 'DEV')
 
 DOMAIN = config[APP_ENV]['DOMAIN']
 
@@ -75,7 +75,7 @@ def refresh_current_instance():
                     db.session.commit()
                     print('History Updated')
 
-                elif result > data:
+                else:
                     active_instance.data = result
                     active_instance.last_updated_at = datetime.now()
                     db.session.add(active_instance)
