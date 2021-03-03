@@ -45,7 +45,7 @@ def refresh_current_instance():
             db.session.commit()
             print('Checking for {}'.format(instance_id))
 
-            result = load_instance(instance_id)
+            result = round(load_instance(instance_id), 2)
             print(f'Data: {data}, Result :{result} ID{instance_id}')
             if result == 'Closed':
                 active_instance.is_closed = True
