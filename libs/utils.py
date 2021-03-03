@@ -1,13 +1,15 @@
 import datetime
 import json
-
+import os
 import requests
 
+from configs.env import config
 
-# from configs.env import config
 #
-# APP_ENV = os.environ.get('APP_ENV', 'DEV')
-# PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
+APP_ENV = os.environ.get('APP_ENV', 'DEV')
+PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
+
+
 # BB_DOMAIN = config[APP_ENV]['BB_DOMAIN']
 
 
@@ -89,3 +91,27 @@ def check_time(start_time):
     if seconds_passed >= ALLOWED_SECONDS:
         return True
     return False
+
+
+def read_instance_details():
+    filename = os.path.join(PROJECT_PATH, 'project_details.json')
+
+    data = {}
+    try:
+        with open(filename, 'r') as f:
+            data = json.loads(f.read())
+    except:
+        pass
+    return data
+
+
+def write_instance_details(data):
+    filename = os.path.join(PROJECT_PATH, 'project_details.json')
+    status = True
+    try:
+        with open(filename, 'w') as f:
+            f.write(json.dumps(data))
+    except Exception as e:
+        print(e)
+        status = False
+    return status

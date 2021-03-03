@@ -7,7 +7,7 @@ from app import app, db
 from configs.models import JackPotIndex, Settings
 from configs.env import config
 
-from libs.utils import load_instance, check_time
+from libs.utils import load_instance, check_time, read_instance_details, write_instance_details
 from libs.emailer import Emailer
 
 APP_ENV = os.environ.get('APP_ENV', 'DEV')
@@ -16,10 +16,11 @@ DOMAIN = config[APP_ENV]['DOMAIN']
 
 MESAGE_TEMPLATE = '''Hi {name}, <br>
                     
-                                The Jackpot {instance_name} has been completed.. <br>
+                                The Jackpot {instance_name}  has been completed.. <br>
                                 
                                 Please add a new one. {url}
                                 Book Of Relics <br>
+                                {date}
                                 NetBet 
                             '''
 
@@ -57,22 +58,52 @@ def refresh_current_instance():
                 print('Threshold touched for {}. Sending Email'.format(instance_name))
                 for email in emails:
                     username = email.split('@')[0]
-                    subject = '{instance_name} | Book Of Relics | NetBet'.format(instance_name=instance_name)
+                    subject = '{instance_name} | {instance_type} |Book Of Relics | NetBet'.format(instance_name=instance_name, instance_type=instance_id)
                     message = MESAGE_TEMPLATE.format(
                         name=username,
                         instance_name=instance_name,
                         url=DOMAIN + '/add_jackpot',
+                        date=datetime.utcnow()
                     )
                     print(message)
                     emailer = Emailer(email=email, message=message, subject=subject)
                     emailer.send_email()
                 continue
             elif result != 0:
-                if data == None:
-                    active_instance.data = result
-                    active_instance.last_updated_at = datetime.now()
-                    db.session.add(active_instance)
-                    db.session.commit()
+                if result < data:
+                    details = read_instance_details()
+                    if instance_id in details:
+                        details[instance_id] += 1
+                    else:
+                        details[instance_id] = 1
+                    write_instance_details(details)
+
+                    if details[instance_id] >= 100:
+                        active_instance.is_closed = True
+                        db.session.add(active_instance)
+                        db.session.commit()
+                        # send email
+                        setting = Settings.query.first()
+                        emails = setting.emails.split(',')
+                        print('Turning off  Status for {} and notitying'.format(instance_id))
+                        print('Threshold touched for {}. Sending Email'.format(instance_name))
+                        for email in emails:
+                            username = email.split('@')[0]
+                            subject = '{instance_name} | {instance_type} |Book Of Relics | NetBet'.format(instance_name=instance_name, instance_type=instance_id)
+                            message = MESAGE_TEMPLATE.format(
+                                name=username,
+                                instance_name=instance_name,
+                                url=DOMAIN + '/add_jackpot',
+                                date=datetime.utcnow()
+                            )
+                            print(message)
+                            emailer = Emailer(email=email, message=message, subject=subject)
+                            emailer.send_email()
+
+                    # active_instance.data = result
+                    # active_instance.last_updated_at = datetime.now()
+                    # db.session.add(active_instance)
+                    # db.session.commit()
                     print('History Updated')
 
                 else:

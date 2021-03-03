@@ -119,6 +119,7 @@ def add_jackpot_instance():
         instance_id=instance_id,
         instance_name=instance_name,
         drop_amount=drop_amount,
+        data=0,
     )
     try:
         db.session.add(jackpot)
