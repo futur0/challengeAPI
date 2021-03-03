@@ -104,7 +104,7 @@ def refresh_current_instance():
                     # active_instance.last_updated_at = datetime.now()
                     # db.session.add(active_instance)
                     # db.session.commit()
-                    # print('History Updated')
+                    print('History Checked')
 
                 else:
                     active_instance.data = result
