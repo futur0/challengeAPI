@@ -70,7 +70,7 @@ def refresh_current_instance():
                     emailer.send_email()
                 continue
             elif result != 0:
-                if result < data:
+                if (data - result) > 1:
                     details = read_instance_details()
                     if instance_id in details:
                         details[instance_id] += 1
