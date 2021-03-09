@@ -78,7 +78,7 @@ def refresh_current_instance():
                         details[instance_id] = 1
                     write_instance_details(details)
 
-                    if details[instance_id] >= 100:
+                    if details[instance_id] >= 10000:
                         active_instance.is_closed = True
                         db.session.add(active_instance)
                         db.session.commit()
