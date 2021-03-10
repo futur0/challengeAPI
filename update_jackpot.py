@@ -46,7 +46,7 @@ def refresh_current_instance():
             print('Checking for {}'.format(instance_id))
 
             result = round(load_instance(instance_id), 2)
-            print(f'Data: {data}, Result :{result} ID{instance_id}')
+            print(f'Time: {datetime.utcnow()} Type: {instance_name} Data: {data}, Result :{result} ID{instance_id}')
             if result == 'Closed':
                 active_instance.is_closed = True
                 db.session.add(active_instance)
