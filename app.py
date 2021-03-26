@@ -36,7 +36,7 @@ RESPONSE = {
 @app.route('/')
 def home():
     RESPONSE['status'] = True
-    RESPONSE['message'] = 'Nothing here, use hte guide to use API'
+    RESPONSE['message'] = 'Nothing here, use the guide to use API'
     return jsonify(RESPONSE)
 
 
