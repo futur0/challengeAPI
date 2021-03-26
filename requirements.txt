@@ -1,8 +1,4 @@
-selenium-wire
-ipdb
 requests
-Flask-SQLAlchemy
 humanize
-sendgrid
-mysqlclient
 gunicorn
+scrapy

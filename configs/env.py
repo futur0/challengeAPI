@@ -1,7 +1,7 @@
 config = {
 
     'DEV': {
-        'PROJECT_PATH': '/home/noobie/projects/freelancing/pph_betting_automtion_june_15_2020/jackpot_monitor_and_alert',
+        'PROJECT_PATH': '/home/noobie/projects/freelancing/fiverr_scripts/futuro/op_gg_scraper_api',
         'DB_HOST': 'localhost',
         'DB_NAME': 'jackpot_tracker',
         'DB_USER': 'jackpot_admin',
