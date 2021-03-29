@@ -13,6 +13,17 @@ class OpGGCrawler:
         self.RETRY_TIMES = RETRY_TIMES
         self.REGIONS = {
             'KR': 'https://www.op.gg/summoner/userName={}',
+            'JP': 'https://jp.op.gg/summoner/userName={}',
+            'NA': 'https://na.op.gg/summoner/userName={}',
+            'EUW': 'https://euw.op.gg/summoner/userName={}',
+            'EUNE': 'https://eune.op.gg/summoner/userName={}',
+            'OCE': 'https://oce.op.gg/summoner/userName={}',
+            'BR': 'https://br.op.gg/summoner/userName={}',
+            'LAS': 'https://las.op.gg/summoner/userName={}',
+            'LAN': 'https://lan.op.gg/summoner/userName={}',
+            'RU': 'https://ru.op.gg/summoner/userName={}',
+            'TR': 'https://tr.op.gg/summoner/userName={}',
+
         }
 
         self.HEADERS = {
