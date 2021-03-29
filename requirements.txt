@@ -2,3 +2,4 @@ requests
 humanize
 gunicorn
 scrapy
+flask
