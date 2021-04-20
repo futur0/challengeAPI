@@ -7,7 +7,7 @@ class OpGGCrawler:
     def __str__(self):
         return 'OpGGCrawler'
 
-    def __init__(self, username, region, RETRY_TIMES=5, hours=12):
+    def __init__(self, username, region, RETRY_TIMES=5, minutes=12 * 60):
         self.username = username
         self.region = region
         self.RETRY_TIMES = RETRY_TIMES
@@ -42,7 +42,7 @@ class OpGGCrawler:
             'sec-gpc': '1',
         }
 
-        self.allowed_seconds = hours * 60 * 60
+        self.allowed_seconds = minutes * 60
 
     def get_url(self):
         """
@@ -89,16 +89,20 @@ class OpGGCrawler:
             try:
                 champion = box.xpath('.//*[@class="ChampionName"]/a/text()').get('')
                 result = box.xpath('.//*[@class="GameResult"]/text()').get('').strip()
-                kda = box.xpath('//span[@class="KDARatio"]/text()').get('').split(':')[0]
+                kda = ''.join(box.css('.KDARatio').xpath('./text()').getall()).strip().replace('KDA', '').strip().split(':')[0]
                 name = self.username
                 timestamp = int(box.css('._timeago').xpath('./@data-datetime').get(''))
-
+                game_type = box.xpath('.//*[@class="GameType"]/text()').get('').strip()
+                GameLength = box.xpath('.//*[@class="GameLength"]/text()').get('').strip()
+                # GameLength
                 data = {
                     "name": name,
                     "timestamp": timestamp,
                     "result": result,
                     "KDA": kda,
-                    "champion": champion
+                    "champion": champion,
+                    'GameType': game_type,
+                    'GameLength': GameLength,
                 }
                 if (curr_time - timestamp) <= self.allowed_seconds:
                     all_data.append(data)

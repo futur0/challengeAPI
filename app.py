@@ -48,7 +48,8 @@ def load_username():
     """
     username = request.args.get('username')
     region = request.args.get('region', 'KR').upper()
-    hours = int(request.args.get('hours', 12))
+    minutes = int(request.args.get('minutes', 12*60))
+
 
     if not username:
         RESPONSE['status'] = False
@@ -56,7 +57,7 @@ def load_username():
         RESPONSE['data'] = {}
         return jsonify(RESPONSE)
 
-    crawler = OpGGCrawler(username=username, region=region, hours=hours)
+    crawler = OpGGCrawler(username=username, region=region, minutes=minutes)
     data = crawler.get_data()
     RESPONSE['status'] = True
     RESPONSE['message'] = 'Data Loaded Succesfully'
