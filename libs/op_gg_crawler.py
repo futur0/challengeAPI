@@ -66,7 +66,7 @@ class OpGGCrawler:
         """
         return self.REGIONS.get(self.region).format(self.username)
 
-    def load_url(self, url, req_type='POST'):
+    def load_url(self, url, req_type):
         """
         Loads the url and returns the text
         :param url:
