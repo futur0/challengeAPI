@@ -88,7 +88,7 @@ class OpGGCrawler:
 
                 if response.status_code == 200 or response.status_code == 418:
                     text_data = response.text
-                    URL_LOADED = True
+                    break
 
                 self.RETRY_TIMES -= 1
 
@@ -136,6 +136,6 @@ class OpGGCrawler:
         base_url = self.get_url()
         text = self.load_url(url=base_url, req_type='POST')
         time.sleep(1)
-        text_data = self.load_url(base_url)
+        text_data = self.load_url(base_url,'GET')
         all_data = self.parse_data(text=text_data)
         return all_data
