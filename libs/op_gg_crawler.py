@@ -79,12 +79,14 @@ class OpGGCrawler:
             try:
                 print('{} -----> {}'.format(self.RETRY_TIMES, url))
                 if req_type != 'POST':
+
                     response = requests.get(url=url, headers=self.HEADERS)
                 else:
                     self.post_headers['Referer'] = url
+                    url = url.split('userName')[0] + 'ajax/renew.json/'
                     response = requests.request("POST", url, headers=self.post_headers, data=payload)
 
-                if response.status_code == 200:
+                if response.status_code == 200 or response.status_code == 418:
                     text_data = response.text
                     URL_LOADED = True
 
@@ -132,7 +134,7 @@ class OpGGCrawler:
 
     def get_data(self):
         base_url = self.get_url()
-        self.load_url(url=base_url,req_type='POST')
+        text = self.load_url(url=base_url, req_type='POST')
         time.sleep(1)
         text_data = self.load_url(base_url)
         all_data = self.parse_data(text=text_data)
