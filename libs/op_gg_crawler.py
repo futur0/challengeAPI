@@ -42,6 +42,21 @@ class OpGGCrawler:
             'sec-gpc': '1',
         }
 
+        self.post_headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'x-datadog-origin': 'rum',
+            'x-datadog-sampled': '1',
+            'x-datadog-sampling-priority': '1',
+            'Origin': 'https://www.op.gg',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Referer': 'https://www.op.gg/summoner/userName=wopazz',
+            'TE': 'Trailers'
+        }
         self.allowed_seconds = minutes * 60
 
     def get_url(self):
@@ -51,7 +66,7 @@ class OpGGCrawler:
         """
         return self.REGIONS.get(self.region).format(self.username)
 
-    def load_url(self, url):
+    def load_url(self, url, req_type='POST'):
         """
         Loads the url and returns the text
         :param url:
@@ -59,11 +74,16 @@ class OpGGCrawler:
         """
         URL_LOADED = False
         text_data = ''
-
+        payload = "summonerId=86372608"
         while not URL_LOADED and self.RETRY_TIMES >= 0:
             try:
                 print('{} -----> {}'.format(self.RETRY_TIMES, url))
-                response = requests.get(url=url, headers=self.HEADERS)
+                if req_type != 'POST':
+                    response = requests.get(url=url, headers=self.HEADERS)
+                else:
+                    self.post_headers['Referer'] = url
+                    response = requests.request("POST", url, headers=self.post_headers, data=payload)
+
                 if response.status_code == 200:
                     text_data = response.text
                     URL_LOADED = True
@@ -112,6 +132,8 @@ class OpGGCrawler:
 
     def get_data(self):
         base_url = self.get_url()
+        self.load_url(url=base_url,req_type='POST')
+        time.sleep(1)
         text_data = self.load_url(base_url)
         all_data = self.parse_data(text=text_data)
         return all_data
