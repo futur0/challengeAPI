@@ -1,7 +1,9 @@
+import random
+
 import requests
 from scrapy.selector import Selector
 import time
-
+from urllib.parse import quote
 
 class OpGGCrawler:
     def __str__(self):
@@ -41,21 +43,25 @@ class OpGGCrawler:
             'accept-language': 'en-US,en;q=0.9',
             'sec-gpc': '1',
         }
+        self.cookies = {
+            '_hist': quote(self.username), #added cookies 25 oct , 2021 Without cookies, the website was rejecting update request and sending us in a loop
+
+        }
 
         self.post_headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0',
+            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0',
             'Accept': 'application/json, text/javascript, */*; q=0.01',
             'Accept-Language': 'en-US,en;q=0.5',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'X-Requested-With': 'XMLHttpRequest',
-            'x-datadog-origin': 'rum',
-            'x-datadog-sampled': '1',
-            'x-datadog-sampling-priority': '1',
             'Origin': 'https://www.op.gg',
             'DNT': '1',
             'Connection': 'keep-alive',
-            'Referer': 'https://www.op.gg/summoner/userName=wopazz',
-            'TE': 'Trailers'
+            'Referer': 'https://www.op.gg/summoner/userName=%EC%9D%B4%EC%BF%A0%EC%97%90%EC%BF%A0%EB%8F%99%EC%BF%A0',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'TE': 'trailers',
         }
         self.allowed_seconds = minutes * 60
 
@@ -64,7 +70,8 @@ class OpGGCrawler:
         CREATES THE CORRECT region
         :return:
         """
-        return self.REGIONS.get(self.region).format(self.username)
+        return self.REGIONS.get(self.region).format(quote(self.username))
+
 
     def load_url(self, url, req_type):
         """
@@ -74,19 +81,27 @@ class OpGGCrawler:
         """
         URL_LOADED = False
         text_data = ''
-        payload = "summonerId=86372608"
+        # self.payload =f"summonerId={str(random.randint(33092139-1000,33092139+1000))}" #changed summonerId (doesnot seem to matter what id we use)
+         #changed summonerId appraoch 25 OCt, 2021
         while not URL_LOADED and self.RETRY_TIMES >= 0:
             try:
                 print('{} -----> {}'.format(self.RETRY_TIMES, url))
                 if req_type != 'POST':
 
-                    response = requests.get(url=url, headers=self.HEADERS)
+                    response = requests.get(url=url, headers=self.HEADERS, )
                 else:
+                    self.payload =f"summonerId={self.summoner_id}"
                     self.post_headers['Referer'] = url
                     url = url.split('userName')[0] + 'ajax/renew.json/'
-                    response = requests.request("POST", url, headers=self.post_headers, data=payload)
+                    headers = self.post_headers.copy()
+                    headers['Referer']= self.get_url() # To accomodate all region, Seems like we have to set the referrer and origin correctly
+                    headers['Origin']= self.get_url().split('/summoner')[0]
+                    headers['Cookie']= f'_hist={quote(self.username)}'
 
-                if response.status_code == 200 or response.status_code == 418:
+                    #
+                    response = requests.request("POST", url, headers=headers, data=self.payload) #Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
+
+                if (response.status_code == 200 or response.status_code == 418) and 'error has occurred' not in response.text:
                     text_data = response.text
                     break
 
@@ -134,8 +149,11 @@ class OpGGCrawler:
 
     def get_data(self):
         base_url = self.get_url()
-        text = self.load_url(url=base_url, req_type='POST')
-        time.sleep(1)
-        text_data = self.load_url(base_url,'GET')
+        # Get summnor ID
+        text_data = self.load_url(base_url, 'GET')
+        self.summoner_id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
+        text = self.load_url(url=base_url, req_type='POST') #request to update the data
+        time.sleep(random.randint(2,3)) # Wait for 2-3 seconds randomly(Added more to be on the safe side)
+        text_data = self.load_url(base_url, 'GET')
         all_data = self.parse_data(text=text_data)
         return all_data
