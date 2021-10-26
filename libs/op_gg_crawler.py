@@ -27,6 +27,11 @@ class OpGGCrawler:
             'TR': 'https://tr.op.gg/summoner/userName={}',
 
         }
+        self.PROXY = 'exito0:69VxUEcbiQrubdy9@proxy.packetstream.io:31112'
+        self.PROXY  = 'amitupreti:RefzyvyXp1QVZRfx@proxy.packetstream.io:31112'
+        self.PROXY_DICT = { "http": f"http://{self.PROXY}",
+                    "https": f"http://{self.PROXY}"
+                    }
 
         self.HEADERS = {
             'authority': 'www.op.gg',
@@ -88,7 +93,7 @@ class OpGGCrawler:
                 print('{} -----> {}'.format(self.RETRY_TIMES, url))
                 if req_type != 'POST':
 
-                    response = requests.get(url=url, headers=self.HEADERS, )
+                    response = requests.get(url=url, headers=self.HEADERS,proxies=self.PROXY_DICT )
                 else:
                     self.payload =f"summonerId={self.summoner_id}"
                     self.post_headers['Referer'] = url
@@ -99,7 +104,7 @@ class OpGGCrawler:
                     headers['Cookie']= f'_hist={quote(self.username)}'
 
                     #
-                    response = requests.request("POST", url, headers=headers, data=self.payload) #Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
+                    response = requests.request("POST", url, headers=headers, data=self.payload, proxies=self.PROXY_DICT) #Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
 
                 if (response.status_code == 200 or response.status_code == 418) and 'error has occurred' not in response.text:
                     text_data = response.text
