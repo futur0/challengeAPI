@@ -153,7 +153,7 @@ class OpGGCrawler:
         text_data = self.load_url(base_url, 'GET')
         self.summoner_id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
         text = self.load_url(url=base_url, req_type='POST') #request to update the data
-        time.sleep(random.randint(2,3)) # Wait for 2-3 seconds randomly(Added more to be on the safe side)
+        time.sleep(random.randint(1,3)*0.5) # Wait for 2-3 seconds randomly(Added more to be on the safe side)
         text_data = self.load_url(base_url, 'GET')
         all_data = self.parse_data(text=text_data)
         return all_data
