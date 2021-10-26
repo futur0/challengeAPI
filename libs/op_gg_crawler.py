@@ -5,6 +5,7 @@ from scrapy.selector import Selector
 import time
 from urllib.parse import quote
 
+
 class OpGGCrawler:
     def __str__(self):
         return 'OpGGCrawler'
@@ -28,10 +29,10 @@ class OpGGCrawler:
 
         }
         self.PROXY = 'exito0:69VxUEcbiQrubdy9@proxy.packetstream.io:31112'
-        self.PROXY  = 'amitupreti:RefzyvyXp1QVZRfx@proxy.packetstream.io:31112'
-        self.PROXY_DICT = { "http": f"http://{self.PROXY}",
-                    "https": f"http://{self.PROXY}"
-                    }
+        self.PROXY = 'amitupreti:RefzyvyXp1QVZRfx@proxy.packetstream.io:31112'
+        self.PROXY_DICT = {"http": f"http://{self.PROXY}",
+                           "https": f"http://{self.PROXY}"
+                           }
 
         self.HEADERS = {
             'authority': 'www.op.gg',
@@ -49,7 +50,7 @@ class OpGGCrawler:
             'sec-gpc': '1',
         }
         self.cookies = {
-            '_hist': quote(self.username), #added cookies 25 oct , 2021 Without cookies, the website was rejecting update request and sending us in a loop
+            '_hist': quote(self.username),  # added cookies 25 oct , 2021 Without cookies, the website was rejecting update request and sending us in a loop
 
         }
 
@@ -77,7 +78,6 @@ class OpGGCrawler:
         """
         return self.REGIONS.get(self.region).format(quote(self.username))
 
-
     def load_url(self, url, req_type):
         """
         Loads the url and returns the text
@@ -87,24 +87,28 @@ class OpGGCrawler:
         URL_LOADED = False
         text_data = ''
         # self.payload =f"summonerId={str(random.randint(33092139-1000,33092139+1000))}" #changed summonerId (doesnot seem to matter what id we use)
-         #changed summonerId appraoch 25 OCt, 2021
+        # changed summonerId appraoch 25 OCt, 2021
         while not URL_LOADED and self.RETRY_TIMES >= 0:
             try:
                 print('{} -----> {}'.format(self.RETRY_TIMES, url))
                 if req_type != 'POST':
 
-                    response = requests.get(url=url, headers=self.HEADERS,proxies=self.PROXY_DICT )
+                    response = requests.get(url=url, headers=self.HEADERS,
+                                            # proxies=self.PROXY_DICT
+                                            )
                 else:
-                    self.payload =f"summonerId={self.summoner_id}"
+                    self.payload = f"summonerId={self.summoner_id}"
                     self.post_headers['Referer'] = url
                     url = url.split('userName')[0] + 'ajax/renew.json/'
                     headers = self.post_headers.copy()
-                    headers['Referer']= self.get_url() # To accomodate all region, Seems like we have to set the referrer and origin correctly
-                    headers['Origin']= self.get_url().split('/summoner')[0]
-                    headers['Cookie']= f'_hist={quote(self.username)}'
+                    headers['Referer'] = self.get_url()  # To accomodate all region, Seems like we have to set the referrer and origin correctly
+                    headers['Origin'] = self.get_url().split('/summoner')[0]
+                    headers['Cookie'] = f'_hist={quote(self.username)}'
 
                     #
-                    response = requests.request("POST", url, headers=headers, data=self.payload, proxies=self.PROXY_DICT) #Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
+                    response = requests.request("POST", url, headers=headers, data=self.payload,
+                                                # proxies=self.PROXY_DICT
+                                                )  # Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
 
                 if (response.status_code == 200 or response.status_code == 418) and 'error has occurred' not in response.text:
                     text_data = response.text
@@ -157,8 +161,8 @@ class OpGGCrawler:
         # Get summnor ID
         text_data = self.load_url(base_url, 'GET')
         self.summoner_id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
-        text = self.load_url(url=base_url, req_type='POST') #request to update the data
-        time.sleep(random.randint(1,3)*0.5) # Wait for 2-3 seconds randomly(Added more to be on the safe side)
+        text = self.load_url(url=base_url, req_type='POST')  # request to update the data
+        time.sleep(random.randint(1, 3) * 0.5)  # Wait for 2-3 seconds randomly(Added more to be on the safe side)
         text_data = self.load_url(base_url, 'GET')
         all_data = self.parse_data(text=text_data)
         return all_data
