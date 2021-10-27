@@ -1,7 +1,7 @@
 import os
 
 from flask import (Flask, jsonify, request)
-
+from flask_cors import CORS
 from configs.env import config
 
 APP_ENV = os.environ.get('APP_ENV', 'DEV')
@@ -17,7 +17,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['SECRET_KEY'] = '38c12fd78e53488da82c1e27003c2030'
-
+CORS(app)
 # TO create the database
 # with app.app_context():db.create_all()
 
