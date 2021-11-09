@@ -11,7 +11,7 @@ DB_NAME = config[APP_ENV]['DB_NAME']
 DB_USER = config[APP_ENV]['DB_USER']
 DB_PASSWORD = config[APP_ENV]['DB_PASSWORD']
 
-print(PROJECT_PATH)
+print(PROJECT_PATH) 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
