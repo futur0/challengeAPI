@@ -14,6 +14,12 @@ class OpGGCrawler:
         self.username = username
         self.region = region
         self.RETRY_TIMES = RETRY_TIMES
+
+        self.BAD_GAME_TYPE = [
+            'ARAM',
+            'Bot'
+        ]  # ADDED NOV6, 2021
+
         self.REGIONS = {
             'KR': 'https://www.op.gg/summoner/userName={}',
             'JP': 'https://jp.op.gg/summoner/userName={}',
@@ -141,6 +147,10 @@ class OpGGCrawler:
                 game_type = box.xpath('.//*[@class="GameType"]/text()').get('').strip()
                 GameLength = box.xpath('.//*[@class="GameLength"]/text()').get('').strip()
                 # GameLength
+
+                for skip_game in self.BAD_GAME_TYPE:
+                    if skip_game.lower() in game_type.lower():
+                        continue
                 data = {
                     "name": name,
                     "timestamp": timestamp,
