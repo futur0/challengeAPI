@@ -148,9 +148,16 @@ class OpGGCrawler:
                 GameLength = box.xpath('.//*[@class="GameLength"]/text()').get('').strip()
                 # GameLength
 
+                skip_bool = False
                 for skip_game in self.BAD_GAME_TYPE:
+                    print(skip_game.lower(),game_type.lower())
                     if skip_game.lower() in game_type.lower():
-                        continue
+                        skip_bool = True
+                        break
+
+
+                if skip_bool:
+                    continue
                 data = {
                     "name": name,
                     "timestamp": timestamp,
