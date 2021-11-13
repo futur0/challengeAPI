@@ -17,7 +17,7 @@ class OpGGCrawler:
 
         self.BAD_GAME_TYPE = [
             'ARAM',
-            'BOT'
+            'Bot'
         ]  # ADDED NOV6, 2021
 
         self.REGIONS = {
