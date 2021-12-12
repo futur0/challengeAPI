@@ -18,10 +18,7 @@ class OpGGValidator:
         self.region = region
         self.RETRY_TIMES = RETRY_TIMES
 
-        self.BAD_GAME_TYPE = [
-            'ARAM',
-            'Bot'
-        ]  # ADDED NOV6, 2021
+        
 
         self.REGIONS = {
             'KR': 'https://www.op.gg/summoner/userName={}',
@@ -61,22 +58,6 @@ class OpGGValidator:
         self.cookies = {
             '_hist': quote(self.username),  # added cookies 25 oct , 2021 Without cookies, the website was rejecting update request and sending us in a loop
 
-        }
-
-        self.post_headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0',
-            'Accept': 'application/json, text/javascript, */*; q=0.01',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Origin': 'https://www.op.gg',
-            'DNT': '1',
-            'Connection': 'keep-alive',
-            'Referer': 'https://www.op.gg/summoner/userName=%EC%9D%B4%EC%BF%A0%EC%97%90%EC%BF%A0%EB%8F%99%EC%BF%A0',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-origin',
-            'TE': 'trailers',
         }
 
     def get_url(self):
