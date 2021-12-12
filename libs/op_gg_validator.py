@@ -9,11 +9,11 @@ from multiprocessing import Process
 
 
 
-class OpGGCrawler:
+class OpGGValidator:
     def __str__(self):
-        return 'OpGGCrawler'
+        return 'OpGGValidator'
 
-    def __init__(self, username, region, RETRY_TIMES=5, minutes=12 * 60):
+    def __init__(self, username, region, RETRY_TIMES=5):
         self.username = username
         self.region = region
         self.RETRY_TIMES = RETRY_TIMES
@@ -78,7 +78,6 @@ class OpGGCrawler:
             'Sec-Fetch-Site': 'same-origin',
             'TE': 'trailers',
         }
-        self.allowed_seconds = minutes * 60
 
     def get_url(self):
         """
@@ -87,7 +86,7 @@ class OpGGCrawler:
         """
         return self.REGIONS.get(self.region).format(quote(self.username))
 
-    def load_url(self, tuple):
+    def get_data(self, tuple):
         # changed 10/dec/2021 : input data as tuple for multiprocessing
         """
         Loads the url and returns the text
@@ -102,25 +101,10 @@ class OpGGCrawler:
         while not URL_LOADED and self.RETRY_TIMES >= 0:
             try:
                 print('{} -----> {}'.format(self.RETRY_TIMES, url))
-                if req_type != 'POST':
-
-                    response = requests.get(url=url, headers=self.HEADERS,
+                
+                response = requests.get(url=url, headers=self.HEADERS,
                                             # proxies=self.PROXY_DICT
                                             )
-                else:
-                    self.payload = f"summonerId={self.summoner_id}"
-                    # self.payload = f"summonerId={str(random.randint(33092139-1000,33092139+1000))}"
-                    self.post_headers['Referer'] = url
-                    url = url.split('userName')[0] + 'ajax/renew.json/'
-                    headers = self.post_headers.copy()
-                    headers['Referer'] = self.get_url()  # To accomodate all region, Seems like we have to set the referrer and origin correctly
-                    headers['Origin'] = self.get_url().split('/summoner')[0]
-                    headers['Cookie'] = f'_hist={quote(self.username)}'
-
-                    #
-                    response = requests.request("POST", url, headers=headers, data=self.payload,
-                                                # proxies=self.PROXY_DICT
-                                                )  # Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
 
                 if (response.status_code == 200 or response.status_code == 418) and 'error has occurred' not in response.text:
                     text_data = response.text
@@ -131,75 +115,27 @@ class OpGGCrawler:
             except Exception as e:
                 print(e)
                 self.RETRY_TIMES -= 1
+
         return text_data
 
-    def parse_data(self, text):
-        """
-        parses the text and then returns the json data
-        :param text:
-        :return:
-        """
-        response = Selector(text=text)
-        boxes = response.css('[class="GameItemWrap"]')
-        curr_time = int(time.time())
-        all_data = []
-        for box in boxes:
-            try:
-                champion = box.xpath('.//*[@class="ChampionName"]/a/text()').get('')
-                result = box.xpath('.//*[@class="GameResult"]/text()').get('').strip()
-                kda = ''.join(box.css('.KDARatio').xpath('./text()').getall()).strip().replace('KDA', '').strip().split(':')[0]
-                name = self.username
-                timestamp = int(box.css('._timeago').xpath('./@data-datetime').get(''))
-                game_type = box.xpath('.//*[@class="GameType"]/text()').get('').strip()
-                GameLength = box.xpath('.//*[@class="GameLength"]/text()').get('').strip()
-                # GameLength
-
-                for skip_game in self.BAD_GAME_TYPE:
-                    if skip_game.lower() in game_type.lower():
-                        continue
-                data = {
-                    "name": name,
-                    "timestamp": timestamp,
-                    "result": result,
-                    "KDA": kda,
-                    "champion": champion,
-                    'GameType': game_type,
-                    'GameLength': GameLength,
-                }
-                if (curr_time - timestamp) <= self.allowed_seconds:
-                    all_data.append(data)
-            except Exception as e:
-                print(e)
-        return all_data
-
     def find_summoner_id(self, text_data):
-        '''
-        find id of summoner, update if new keyword if found
-        like MostChampionContent and GameListContainer
-        '''
 
         id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
         id2 = Selector(text=text_data).xpath('//*[@class="GameListContainer"]/@data-summoner-id').get('')
 
         if id != '': return id
         elif id2!= '': return id2
+        else : return ''
 
-    def get_data(self):
-
-        # pools for //
-        p1 = Pool()
-        p2 = Pool()
+    def run(self):
 
         base_url = self.get_url()
-        text_data = self.load_url((base_url, 'GET'))
-        self.summoner_id = self.find_summoner_id(text_data)
-        
-        # in //
-        text = p1.map(self.load_url , [(base_url, 'POST')])
+        # Get summnor ID
+        text_data = self.get_data((base_url, 'GET'))
+        id = self.find_summoner_id(text_data)
 
-        '''delay'''
-        # time.sleep(random.randint(1, 2) * 0.25)  # Wait for 0.25-0.5 seconds randomly
-        
-        all_data = p2.map(self.parse_data , [(text_data)])
+        if id != '':
 
-        return all_data
+            return 1
+        
+        return 0
