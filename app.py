@@ -80,41 +80,6 @@ def load_username():
 
     return jsonify(RESPONSE)
 
-@app.route('/valid')
-def validate_username():
-
-    """
-    Reads username and region and check whether the combination exists
-    """
-    t1 = time.time()
-    username = request.args.get('username')
-    region = request.args.get('region', 'KR').upper()
-
-    if not username:
-        RESP_VALID['status'] = False
-        RESP_VALID['message'] = 'Username is required'
-        return jsonify(RESP_VALID)
-
-    crawler = op_gg_validator.OpGGValidator(username=username, region=region)
-
-    data = crawler.run()
-
-    if data:
-    
-        RESP_VALID['message'] = 'search done'
-        RESP_VALID['status'] = True
-    
-    if not data:
-    
-        RESP_VALID['message'] = 'search done'
-        RESP_VALID['status'] = False
-
-    t2 = time.time()
-    print(t2-t1 ,'seconds')
-
-    return jsonify(RESP_VALID)
-
-
 
 
 #
