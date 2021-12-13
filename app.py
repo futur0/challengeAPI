@@ -3,7 +3,6 @@ import os
 from flask import (Flask, jsonify, request)
 from flask_cors import CORS
 from configs.env import config
-import time
 
 APP_ENV = os.environ.get('APP_ENV', 'DEV')
 PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
@@ -33,11 +32,6 @@ RESPONSE = {
     }
 }
 
-RESP_VALID = {
-    'message': '',
-    'status': '',
-}
-
 
 @app.route('/')
 def home():
@@ -52,8 +46,6 @@ def load_username():
     Reads username and region and returns the json formatted data
     :return:
     """
-    t1 = time.time()
-
     username = request.args.get('username')
     region = request.args.get('region', 'KR').upper()
     minutes = int(request.args.get('minutes', 12*60))
@@ -66,21 +58,14 @@ def load_username():
         return jsonify(RESPONSE)
 
     crawler = OpGGCrawler(username=username, region=region, minutes=minutes)
-    
     data = crawler.get_data()
-    
     RESPONSE['status'] = True
     RESPONSE['message'] = 'Data Loaded Succesfully'
     RESPONSE['data']['results'] = data
     RESPONSE['data']['count'] = len(data)
-
-    t2 = time.time()
-    print(t2-t1 ,'seconds')
-
     return jsonify(RESPONSE)
-
 
 
 #
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000,threaded = True)
+    app.run(host='0.0.0.0', port=5000)
