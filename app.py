@@ -23,7 +23,6 @@ CORS(app)
 # with app.app_context():db.create_all()
 
 from libs import OpGGCrawler
-from libs import op_gg_validator
 
 RESPONSE = {
     'status': False,
