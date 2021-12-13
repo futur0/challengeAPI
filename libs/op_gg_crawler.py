@@ -183,6 +183,7 @@ class OpGGCrawler:
 
         if id != '': return id
         elif id2!= '': return id2
+        else : return ''
 
     def get_data(self):
 
