@@ -95,6 +95,7 @@ class OpGGCrawler:
         :param url:
         :return:
         """
+        time.sleep(0.01)
         url, req_type = tuple
         URL_LOADED = False
         text_data = ''
@@ -140,6 +141,7 @@ class OpGGCrawler:
         :param text:
         :return:
         """
+        time.sleep(0.01)
         response = Selector(text=text)
         boxes = response.css('[class="GameItemWrap"]')
         curr_time = int(time.time())
@@ -188,31 +190,24 @@ class OpGGCrawler:
 
     def get_data(self):
 
-        # pools for //
-        # p1 = Pool(processes=4)
-        # p2 = Pool(processes=4)
+        base_url = self.get_url()
+        text_data = self.load_url((base_url, 'GET'))
+        self.summoner_id = self.find_summoner_id(text_data)
+        
+        p1 = Pool(1)
+        text = p1.map(self.load_url , [(base_url, 'POST')])
+        p1.close()
+        p1.join()
+
+        p2 = Pool(1)
+        all_data = p2.map(self.parse_data , [(text_data)])
+        p2.close()
+        p2.join()
 
         # base_url = self.get_url()
         # text_data = self.load_url((base_url, 'GET'))
         # self.summoner_id = self.find_summoner_id(text_data)
-        
-        # # in //
-        # text = p1.map(self.load_url , [(base_url, 'POST')])
-
-        # '''delay'''
-        # # time.sleep(random.randint(1, 2) * 0.25)  # Wait for 0.25-0.5 seconds randomly
-        
-        # all_data = p2.map(self.parse_data , [(text_data)])
-
-        # p1.close()
-        # p1.join()
-        # p2.close()
-        # p2.join()
-
-        base_url = self.get_url()
-        text_data = self.load_url((base_url, 'GET'))
-        self.summoner_id = self.find_summoner_id(text_data)
-        text = self.load_url((base_url, 'POST'))
-        all_data = self.parse_data((text_data))
+        # text = self.load_url((base_url, 'POST'))
+        # all_data = self.parse_data((text_data))
 
         return all_data

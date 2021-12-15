@@ -4,6 +4,8 @@ from flask import (Flask, jsonify, request)
 from flask_cors import CORS
 from configs.env import config
 import time
+# import flask_monitoringdashboard as dashboard
+
 
 APP_ENV = os.environ.get('APP_ENV', 'DEV')
 PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
@@ -14,6 +16,7 @@ DB_PASSWORD = config[APP_ENV]['DB_PASSWORD']
 
 print(PROJECT_PATH) 
 app = Flask(__name__)
+# dashboard.bind(app)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
