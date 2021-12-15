@@ -1,3 +1,4 @@
+from os import close
 import random
 
 import requests
@@ -188,19 +189,30 @@ class OpGGCrawler:
     def get_data(self):
 
         # pools for //
-        p1 = Pool()
-        p2 = Pool()
+        # p1 = Pool(processes=4)
+        # p2 = Pool(processes=4)
+
+        # base_url = self.get_url()
+        # text_data = self.load_url((base_url, 'GET'))
+        # self.summoner_id = self.find_summoner_id(text_data)
+        
+        # # in //
+        # text = p1.map(self.load_url , [(base_url, 'POST')])
+
+        # '''delay'''
+        # # time.sleep(random.randint(1, 2) * 0.25)  # Wait for 0.25-0.5 seconds randomly
+        
+        # all_data = p2.map(self.parse_data , [(text_data)])
+
+        # p1.close()
+        # p1.join()
+        # p2.close()
+        # p2.join()
 
         base_url = self.get_url()
         text_data = self.load_url((base_url, 'GET'))
         self.summoner_id = self.find_summoner_id(text_data)
-        
-        # in //
-        text = p1.map(self.load_url , [(base_url, 'POST')])
-
-        '''delay'''
-        # time.sleep(random.randint(1, 2) * 0.25)  # Wait for 0.25-0.5 seconds randomly
-        
-        all_data = p2.map(self.parse_data , [(text_data)])
+        text = self.load_url((base_url, 'POST'))
+        all_data = self.parse_data((text_data))
 
         return all_data
