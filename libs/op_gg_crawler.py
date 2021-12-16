@@ -88,15 +88,14 @@ class OpGGCrawler:
         """
         return self.REGIONS.get(self.region).format(quote(self.username))
 
-    def load_url(self, tuple):
+    def load_url(self, url, req_type):
         # changed 10/dec/2021 : input data as tuple for multiprocessing
         """
         Loads the url and returns the text
         :param url:
         :return:
         """
-        time.sleep(0.01)
-        url, req_type = tuple
+        
         URL_LOADED = False
         text_data = ''
         # self.payload =f"summonerId={str(random.randint(33092139-1000,33092139+1000))}" #changed summonerId (doesnot seem to matter what id we use)
@@ -141,7 +140,6 @@ class OpGGCrawler:
         :param text:
         :return:
         """
-        time.sleep(0.01)
         response = Selector(text=text)
         boxes = response.css('[class="GameItemWrap"]')
         curr_time = int(time.time())
@@ -191,23 +189,9 @@ class OpGGCrawler:
     def get_data(self):
 
         base_url = self.get_url()
-        text_data = self.load_url((base_url, 'GET'))
+        text_data = self.load_url(base_url, 'GET')
         self.summoner_id = self.find_summoner_id(text_data)
-        
-        p1 = Pool(1)
-        text = p1.map(self.load_url , [(base_url, 'POST')])
-        p1.close()
-        p1.join()
-
-        p2 = Pool(1)
-        all_data = p2.map(self.parse_data , [(text_data)])
-        p2.close()
-        p2.join()
-
-        # base_url = self.get_url()
-        # text_data = self.load_url((base_url, 'GET'))
-        # self.summoner_id = self.find_summoner_id(text_data)
-        # text = self.load_url((base_url, 'POST'))
-        # all_data = self.parse_data((text_data))
+        text = self.load_url(base_url, 'POST')
+        all_data = self.parse_data(text_data)
 
         return all_data
