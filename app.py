@@ -3,9 +3,7 @@ import os
 from flask import (Flask, jsonify, request)
 from flask_cors import CORS
 from configs.env import config
-import flask_monitoringdashboard as dashboard
-from libs import OpGGCrawler
-from libs.op_gg_validator import OpGGValidator
+
 
 APP_ENV = os.environ.get('APP_ENV', 'DEV')
 PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
@@ -16,7 +14,6 @@ DB_PASSWORD = config[APP_ENV]['DB_PASSWORD']
 
 print(PROJECT_PATH) 
 app = Flask(__name__)
-dashboard.bind(app)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -25,7 +22,8 @@ CORS(app)
 # TO create the database
 # with app.app_context():db.create_all()
 
-
+from libs import OpGGCrawler
+from libs import OpGGValidator
 
 RESPONSE = {
     'status': False,
