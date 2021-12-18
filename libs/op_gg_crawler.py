@@ -5,9 +5,6 @@ import requests
 from scrapy.selector import Selector
 import time
 from urllib.parse import quote
-from multiprocessing import Pool
-from multiprocessing import Process
-
 
 
 class OpGGCrawler:
@@ -89,13 +86,11 @@ class OpGGCrawler:
         return self.REGIONS.get(self.region).format(quote(self.username))
 
     def load_url(self, url, req_type):
-        # changed 10/dec/2021 : input data as tuple for multiprocessing
         """
         Loads the url and returns the text
         :param url:
         :return:
         """
-        
         URL_LOADED = False
         text_data = ''
         # self.payload =f"summonerId={str(random.randint(33092139-1000,33092139+1000))}" #changed summonerId (doesnot seem to matter what id we use)
@@ -110,7 +105,6 @@ class OpGGCrawler:
                                             )
                 else:
                     self.payload = f"summonerId={self.summoner_id}"
-                    # self.payload = f"summonerId={str(random.randint(33092139-1000,33092139+1000))}"
                     self.post_headers['Referer'] = url
                     url = url.split('userName')[0] + 'ajax/renew.json/'
                     headers = self.post_headers.copy()
@@ -173,35 +167,13 @@ class OpGGCrawler:
                 print(e)
         return all_data
 
-    def find_summoner_id(self, text_data):
-        '''
-        find id of summoner, update if new keyword if found
-        like MostChampionContent and GameListContainer
-        '''
-
-        id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
-        if id != '': 
-            # id found in this class, return it and exit function
-            return id
-        
-        if id == '':
-            # if id is null, try other class
-            id2 = Selector(text=text_data).xpath('//*[@class="GameListContainer"]/@data-summoner-id').get('')
-            
-            if id2 != '':
-                # if id found in the second class, return it and exit function
-                return id2
-
-            else : 
-                # if no id is found, return null
-                return ''
-
     def get_data(self):
-
         base_url = self.get_url()
+        # Get summnor ID
         text_data = self.load_url(base_url, 'GET')
-        self.summoner_id = self.find_summoner_id(text_data)
-        text = self.load_url(base_url, 'POST')
-        all_data = self.parse_data(text_data)
-
+        self.summoner_id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
+        text = self.load_url(url=base_url, req_type='POST')  # request to update the data
+        time.sleep(random.randint(1, 3) * 0.5)  # Wait for 2-3 seconds randomly(Added more to be on the safe side)
+        text_data = self.load_url(base_url, 'GET')
+        all_data = self.parse_data(text=text_data)
         return all_data

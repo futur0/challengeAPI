@@ -3,9 +3,6 @@ import os
 from flask import (Flask, jsonify, request)
 from flask_cors import CORS
 from configs.env import config
-import flask_monitoringdashboard as dashboard
-from libs import OpGGCrawler
-from libs.op_gg_validator import OpGGValidator
 
 APP_ENV = os.environ.get('APP_ENV', 'DEV')
 PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
@@ -25,7 +22,7 @@ CORS(app)
 # TO create the database
 # with app.app_context():db.create_all()
 
-
+from libs import OpGGCrawler
 
 RESPONSE = {
     'status': False,
@@ -34,11 +31,6 @@ RESPONSE = {
         'count': 0,
         'results': []
     }
-}
-
-RESP_VALID = {
-    'message': '',
-    'status': '',
 }
 
 
@@ -67,52 +59,14 @@ def load_username():
         return jsonify(RESPONSE)
 
     crawler = OpGGCrawler(username=username, region=region, minutes=minutes)
-    
     data = crawler.get_data()
-    
     RESPONSE['status'] = True
     RESPONSE['message'] = 'Data Loaded Succesfully'
     RESPONSE['data']['results'] = data
     RESPONSE['data']['count'] = len(data)
-
     return jsonify(RESPONSE)
-
-
-@app.route('/valid')
-def validate_username():
-
-    """
-    Reads username and region and check whether the combination exists
-    """
-    username = request.args.get('username')
-    region = request.args.get('region', 'KR').upper()
-
-    if not username:
-        RESP_VALID['status'] = False
-        RESP_VALID['message'] = 'Username is required'
-        return jsonify(RESP_VALID)
-
-    crawler = OpGGValidator(username=username, region=region)
-
-    data = crawler.run()
-
-    if data:
-    
-        RESP_VALID['message'] = 'search done'
-        RESP_VALID['status'] = True
-    
-    if not data:
-    
-        RESP_VALID['message'] = 'search done'
-        RESP_VALID['status'] = False
-
-
-    return jsonify(RESP_VALID)
-
-
 
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
-
