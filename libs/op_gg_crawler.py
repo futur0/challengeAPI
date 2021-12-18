@@ -1,4 +1,3 @@
-from os import close
 import random
 
 import requests
