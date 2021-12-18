@@ -1,25 +1,24 @@
-from os import close
 import random
 
 import requests
 from scrapy.selector import Selector
 import time
 from urllib.parse import quote
+from multiprocessing import Pool
+from multiprocessing import Process
 
 
-class OpGGCrawler:
+
+class OpGGValidator:
     def __str__(self):
-        return 'OpGGCrawler'
+        return 'OpGGValidator'
 
-    def __init__(self, username, region, RETRY_TIMES=5, minutes=12 * 60):
+    def __init__(self, username, region, RETRY_TIMES=5):
         self.username = username
         self.region = region
         self.RETRY_TIMES = RETRY_TIMES
 
-        self.BAD_GAME_TYPE = [
-            'ARAM',
-            'Bot'
-        ]  # ADDED NOV6, 2021
+        
 
         self.REGIONS = {
             'KR': 'https://www.op.gg/summoner/userName={}',
@@ -61,23 +60,6 @@ class OpGGCrawler:
 
         }
 
-        self.post_headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0',
-            'Accept': 'application/json, text/javascript, */*; q=0.01',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Origin': 'https://www.op.gg',
-            'DNT': '1',
-            'Connection': 'keep-alive',
-            'Referer': 'https://www.op.gg/summoner/userName=%EC%9D%B4%EC%BF%A0%EC%97%90%EC%BF%A0%EB%8F%99%EC%BF%A0',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-origin',
-            'TE': 'trailers',
-        }
-        self.allowed_seconds = minutes * 60
-
     def get_url(self):
         """
         CREATES THE CORRECT region
@@ -86,11 +68,13 @@ class OpGGCrawler:
         return self.REGIONS.get(self.region).format(quote(self.username))
 
     def load_url(self, url, req_type):
+        # changed 10/dec/2021 : input data as tuple for multiprocessing
         """
         Loads the url and returns the text
         :param url:
         :return:
         """
+        
         URL_LOADED = False
         text_data = ''
         # self.payload =f"summonerId={str(random.randint(33092139-1000,33092139+1000))}" #changed summonerId (doesnot seem to matter what id we use)
@@ -105,6 +89,7 @@ class OpGGCrawler:
                                             )
                 else:
                     self.payload = f"summonerId={self.summoner_id}"
+                    # self.payload = f"summonerId={str(random.randint(33092139-1000,33092139+1000))}"
                     self.post_headers['Referer'] = url
                     url = url.split('userName')[0] + 'ajax/renew.json/'
                     headers = self.post_headers.copy()
@@ -167,13 +152,40 @@ class OpGGCrawler:
                 print(e)
         return all_data
 
-    def get_data(self):
+    def find_summoner_id(self, text_data):
+        '''
+        find id of summoner, update if new keyword if found
+        like MostChampionContent and GameListContainer
+        '''
+
+        id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
+        if id != '': 
+            # id found in this class, return it and exit function
+            return id
+        
+        if id == '':
+            # if id is null, try other class
+            id2 = Selector(text=text_data).xpath('//*[@class="GameListContainer"]/@data-summoner-id').get('')
+            
+            if id2 != '':
+                # if id found in the second class, return it and exit function
+                return id2
+
+            else : 
+                # if no id is found, return null
+                return ''
+
+    def run(self):
+
         base_url = self.get_url()
         # Get summnor ID
         text_data = self.load_url(base_url, 'GET')
-        self.summoner_id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
-        text = self.load_url(url=base_url, req_type='POST')  # request to update the data
-        time.sleep(random.randint(1, 3) * 0.5)  # Wait for 2-3 seconds randomly(Added more to be on the safe side)
-        text_data = self.load_url(base_url, 'GET')
-        all_data = self.parse_data(text=text_data)
-        return all_data
+        id = self.find_summoner_id(text_data)
+
+        if id != '':
+
+            return 1
+        
+        else:
+            
+            return 0

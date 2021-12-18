@@ -13,6 +13,7 @@ DB_PASSWORD = config[APP_ENV]['DB_PASSWORD']
 
 print(PROJECT_PATH) 
 app = Flask(__name__)
+dashboard.bind(app)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -66,6 +67,6 @@ def load_username():
     return jsonify(RESPONSE)
 
 
-#
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
