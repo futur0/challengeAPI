@@ -1,10 +1,11 @@
-import random
 
 import requests
 from scrapy.selector import Selector
 import time
 from urllib.parse import quote
-
+import requests
+import json
+from bs4 import BeautifulSoup
 
 
 class OpGGValidator:
@@ -65,120 +66,43 @@ class OpGGValidator:
         """
         return self.REGIONS.get(self.region).format(quote(self.username))
 
-    def load_url(self, url, req_type):
-        # changed 10/dec/2021 : input data as tuple for multiprocessing
-        """
-        Loads the url and returns the text
-        :param url:
-        :return:
-        """
-        
-        URL_LOADED = False
-        text_data = ''
-        # self.payload =f"summonerId={str(random.randint(33092139-1000,33092139+1000))}" #changed summonerId (doesnot seem to matter what id we use)
-        # changed summonerId appraoch 25 OCt, 2021
-        while not URL_LOADED and self.RETRY_TIMES >= 0:
-            try:
-                print('{} -----> {}'.format(self.RETRY_TIMES, url))
-                if req_type != 'POST':
 
-                    response = requests.get(url=url, headers=self.HEADERS,
-                                            # proxies=self.PROXY_DICT
-                                            )
-                else:
-                    self.payload = f"summonerId={self.summoner_id}"
-                    # self.payload = f"summonerId={str(random.randint(33092139-1000,33092139+1000))}"
-                    self.post_headers['Referer'] = url
-                    url = url.split('userName')[0] + 'ajax/renew.json/'
-                    headers = self.post_headers.copy()
-                    headers['Referer'] = self.get_url()  # To accomodate all region, Seems like we have to set the referrer and origin correctly
-                    headers['Origin'] = self.get_url().split('/summoner')[0]
-                    headers['Cookie'] = f'_hist={quote(self.username)}'
+    def find_id_using_bs4(self, url, headers):
 
-                    #
-                    response = requests.request("POST", url, headers=headers, data=self.payload,
-                                                # proxies=self.PROXY_DICT
-                                                )  # Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
+        r = requests.get(url , headers=headers)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        script_list = soup.find_all('script')
 
-                if (response.status_code == 200 or response.status_code == 418) and 'error has occurred' not in response.text:
-                    text_data = response.text
-                    break
+        #find the json file correct index (it changes !)
+        json_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
+        idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == json_header][0]
 
-                self.RETRY_TIMES -= 1
 
-            except Exception as e:
-                print(e)
-                self.RETRY_TIMES -= 1
-        return text_data
+        script = script_list[idx].text.strip()
+        try:
+            id = json.loads(script)['props']['pageProps']['data']['id']
+        except:
+            id = ''
+            print('user not found')
 
-    def parse_data(self, text):
-        """
-        parses the text and then returns the json data
-        :param text:
-        :return:
-        """
-        response = Selector(text=text)
-        boxes = response.css('[class="GameItemWrap"]')
-        curr_time = int(time.time())
-        all_data = []
-        for box in boxes:
-            try:
-                champion = box.xpath('.//*[@class="ChampionName"]/a/text()').get('')
-                result = box.xpath('.//*[@class="GameResult"]/text()').get('').strip()
-                kda = ''.join(box.css('.KDARatio').xpath('./text()').getall()).strip().replace('KDA', '').strip().split(':')[0]
-                name = self.username
-                timestamp = int(box.css('._timeago').xpath('./@data-datetime').get(''))
-                game_type = box.xpath('.//*[@class="GameType"]/text()').get('').strip()
-                GameLength = box.xpath('.//*[@class="GameLength"]/text()').get('').strip()
-                # GameLength
+        return id
 
-                for skip_game in self.BAD_GAME_TYPE:
-                    if skip_game.lower() in game_type.lower():
-                        continue
-                data = {
-                    "name": name,
-                    "timestamp": timestamp,
-                    "result": result,
-                    "KDA": kda,
-                    "champion": champion,
-                    'GameType': game_type,
-                    'GameLength': GameLength,
-                }
-                if (curr_time - timestamp) <= self.allowed_seconds:
-                    all_data.append(data)
-            except Exception as e:
-                print(e)
-        return all_data
-
-    def find_summoner_id(self, text_data):
-        '''
-        find id of summoner, update if new keyword if found
-        like MostChampionContent and GameListContainer
-        '''
-
-        id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
-        if id != '': 
-            # id found in this class, return it and exit function
-            return id
-        
-        if id == '':
-            # if id is null, try other class
-            id2 = Selector(text=text_data).xpath('//*[@class="GameListContainer"]/@data-summoner-id').get('')
-            
-            if id2 != '':
-                # if id found in the second class, return it and exit function
-                return id2
-
-            else : 
-                # if no id is found, return null
-                return ''
 
     def run(self):
 
-        base_url = self.get_url()
+        '''old way'''
+        # base_url = self.get_url()
         # Get summnor ID
-        text_data = self.load_url(base_url, 'GET')
-        id = self.find_summoner_id(text_data)
+        # text_data = self.load_url(base_url, 'GET')
+        # id = self.find_summoner_id(text_data)
+
+        '''new way using beautiful soup'''
+        base_url = ''
+        user = self.username
+        region = self.region.lower()
+
+        base_url = 'https://na.op.gg/summoners/' + region + '/' + user
+        id = self.find_id_using_bs4(base_url , self.HEADERS)
 
         if id != '':
 
