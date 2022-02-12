@@ -1,13 +1,9 @@
-from os import close
-import random
-
 import requests
-from scrapy.selector import Selector
 import time
 from urllib.parse import quote
-
-
-
+import json
+from bs4 import BeautifulSoup
+import datetime
 
 class OpGGCrawler:
     def __str__(self):
@@ -80,6 +76,27 @@ class OpGGCrawler:
         }
         self.allowed_seconds = minutes * 60
 
+    def string_to_delta(self, string_delta):
+
+        # check if day, month or year
+        value, unit, _ = string_delta.split()
+        
+        if unit == 'month':
+            value = 1 * 30   # bcz value = 'a'
+            unit = 'days'   
+        if unit == 'months':
+            value = int(value) * 30
+            unit = 'days'
+        if unit == 'year':
+            value = 1 * 365
+            unit = 'days'
+        if unit == 'years':
+            value = int(value) * 365
+            unit = 'days'
+            
+        return int(datetime.timedelta(**{unit: float(value)}).total_seconds())
+
+
     def get_url(self):
         """
         CREATES THE CORRECT region
@@ -122,7 +139,8 @@ class OpGGCrawler:
                                                 # proxies=self.PROXY_DICT
                                                 )  # Updated 25 oct 2021, Added cookies and quoted url to reduce the errors
 
-                if (response.status_code == 200 or response.status_code == 418) and 'error has occurred' not in response.text:
+                # if (response.status_code == 200 or response.status_code == 418) and 'error has occurred' not in response.text:
+                if (response.status_code == 200 or response.status_code == 418):
                     text_data = response.text
                     break
 
@@ -133,74 +151,87 @@ class OpGGCrawler:
                 self.RETRY_TIMES -= 1
         return text_data
 
-    def parse_data(self, text):
-        """
-        parses the text and then returns the json data
-        :param text:
-        :return:
-        """
-        response = Selector(text=text)
-        boxes = response.css('[class="GameItemWrap"]')
+
+    def find_id_and_data(self, url, headers):
+
+        r = requests.get(url , headers=headers)
+        soup = BeautifulSoup(r.text , features="lxml" )
+
+        script_list = soup.find_all('script')
+        li_list = soup.find_all('li')
+
+        #find the json file correct index (it changes !)
+        script_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
+        idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == script_header][0]
+        script = script_list[idx].text.strip()
+    
+        try:
+            id = json.loads(script)['props']['pageProps']['data']['id']
+        except:
+            id = ''
+            print('user not found')
+
+        li_header = {'class': ['css-ja2wlz', 'e1iiyghw3']}
+        idx = [idx for idx, element in enumerate(li_list) if li_list[idx].attrs == li_header]
+
         curr_time = int(time.time())
         all_data = []
-        for box in boxes:
-            try:
-                champion = box.xpath('.//*[@class="ChampionName"]/a/text()').get('')
-                result = box.xpath('.//*[@class="GameResult"]/text()').get('').strip()
-                kda = ''.join(box.css('.KDARatio').xpath('./text()').getall()).strip().replace('KDA', '').strip().split(':')[0]
-                name = self.username
-                timestamp = int(box.css('._timeago').xpath('./@data-datetime').get(''))
-                game_type = box.xpath('.//*[@class="GameType"]/text()').get('').strip()
-                GameLength = box.xpath('.//*[@class="GameLength"]/text()').get('').strip()
-                # GameLength
+        try:
+            for i in idx:
+                block = li_list[i].find_all('div')
 
+                name = self.username
+                timestamp = block[4].contents[0]
+                result = block[6].contents[0]
+                kda = block[23].contents[0].text.split(':')[0]
+                champion = block[20].contents[0] 
+                game_type = block[2].contents[0]
+                try:
+                    GameLength = block[7].contents[0].split(':')[0] + 'm'  + ' ' + block[7].contents[0].split(':')[1] + 's'
+                except:
+                    GameLength = ' '
+                    
+                time_delta = curr_time - self.string_to_delta(timestamp)
+                
                 for skip_game in self.BAD_GAME_TYPE:
                     if skip_game.lower() in game_type.lower():
                         continue
+                
                 data = {
-                    "name": name,
-                    "timestamp": timestamp,
-                    "result": result,
-                    "KDA": kda,
-                    "champion": champion,
-                    'GameType': game_type,
-                    'GameLength': GameLength,
-                }
-                if (curr_time - timestamp) <= self.allowed_seconds:
+                            "name": name,
+                            "timestamp": time_delta,
+                            "result": result,
+                            "KDA": kda,
+                            "champion": champion,
+                            'GameType': game_type,
+                            'GameLength': GameLength
+                        }
+
+                if (curr_time - time_delta) <= self.allowed_seconds:
                     all_data.append(data)
-            except Exception as e:
+
+
+        except Exception as e:
                 print(e)
-        return all_data
 
-    def find_summoner_id(self, text_data):
-        '''
-        find id of summoner, update if new keyword if found
-        like MostChampionContent and GameListContainer
-        '''
+        return id, all_data
 
-        id = Selector(text=text_data).xpath('//*[@class="MostChampionContent"]/@data-summoner-id').get('')
-        if id != '': 
-            # id found in this class, return it and exit function
-            return id
-        
-        if id == '':
-            # if id is null, try other class
-            id2 = Selector(text=text_data).xpath('//*[@class="GameListContainer"]/@data-summoner-id').get('')
-            
-            if id2 != '':
-                # if id found in the second class, return it and exit function
-                return id2
 
-            else : 
-                # if no id is found, return null
-                return ''
 
     def get_data(self):
 
+        # url for posting
         base_url = self.get_url()
-        text_data = self.load_url(base_url, 'GET')
-        self.summoner_id = self.find_summoner_id(text_data)
+
+        # new way of finding id
+        user = self.username
+        region = self.region.lower()
+        site_url = 'https://na.op.gg/summoners/' + region + '/' + user
+
+        # get id and player data
+        self.summoner_id , all_data = self.find_id_and_data(site_url , self.HEADERS)
+
+
         text = self.load_url(base_url, 'POST')
-        all_data = self.parse_data(text_data)
 
         return all_data
