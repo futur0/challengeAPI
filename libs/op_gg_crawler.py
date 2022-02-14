@@ -81,6 +81,9 @@ class OpGGCrawler:
         # check if day, month or year
         value, unit, _ = string_delta.split()
         
+        if unit == 'day':
+            value = 1        # bcz value = 'a'
+            unit = 'days'
         if unit == 'month':
             value = 1 * 30   # bcz value = 'a'
             unit = 'days'   
