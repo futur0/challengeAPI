@@ -1,7 +1,5 @@
 
 import requests
-from scrapy.selector import Selector
-import time
 from urllib.parse import quote
 import requests
 import json
