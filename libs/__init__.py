@@ -1,2 +1,2 @@
-from .op_gg_crawler import OpGGCrawler
-from .op_gg_validator import OpGGValidator
+from .op_gg_crawler import Crawler
+from .op_gg_validator import Validator

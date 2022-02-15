@@ -3,7 +3,8 @@ import os
 from flask import (Flask, jsonify, request)
 from flask_cors import CORS
 from configs.env import config
-
+from libs import Crawler
+from libs import Validator
 
 APP_ENV = os.environ.get('APP_ENV', 'DEV')
 PROJECT_PATH = config[APP_ENV]['PROJECT_PATH']
@@ -22,8 +23,7 @@ CORS(app)
 # TO create the database
 # with app.app_context():db.create_all()
 
-from libs import OpGGCrawler
-from libs import OpGGValidator
+
 
 RESPONSE = {
     'status': False,
@@ -64,7 +64,7 @@ def load_username():
         RESPONSE['data'] = {}
         return jsonify(RESPONSE)
 
-    crawler = OpGGCrawler(username=username, region=region, minutes=minutes)
+    crawler = Crawler(username=username, region=region, minutes=minutes)
     
     data = crawler.get_data()
     
@@ -90,7 +90,7 @@ def validate_username():
         RESP_VALID['message'] = 'Username is required'
         return jsonify(RESP_VALID)
 
-    crawler = OpGGValidator(username=username, region=region)
+    crawler = Validator(username=username, region=region)
 
     data = crawler.run()
 

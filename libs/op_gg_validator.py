@@ -2,13 +2,12 @@
 import requests
 from urllib.parse import quote
 import requests
-import json
-from bs4 import BeautifulSoup
 
 
-class OpGGValidator:
+class Validator:
+
     def __str__(self):
-        return 'OpGGValidator'
+        return 'Validator'
 
     def __init__(self, username, region, RETRY_TIMES=5):
         self.username = username
@@ -17,41 +16,42 @@ class OpGGValidator:
 
         
 
-        self.REGIONS = {
-            'KR': 'https://www.op.gg/summoner/userName={}',
-            'JP': 'https://jp.op.gg/summoner/userName={}',
-            'NA': 'https://na.op.gg/summoner/userName={}',
-            'EUW': 'https://euw.op.gg/summoner/userName={}',
-            'EUNE': 'https://eune.op.gg/summoner/userName={}',
-            'OCE': 'https://oce.op.gg/summoner/userName={}',
-            'BR': 'https://br.op.gg/summoner/userName={}',
-            'LAS': 'https://las.op.gg/summoner/userName={}',
-            'LAN': 'https://lan.op.gg/summoner/userName={}',
-            'RU': 'https://ru.op.gg/summoner/userName={}',
-            'TR': 'https://tr.op.gg/summoner/userName={}',
+        self.URL = {
+            'KR': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=KR&type=',
+            'JP': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=JP&type=',
+            'NA': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=NA&type=',
+            'EUW': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=EUW&type=',
+            'EUNE': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=EUNE&type=',
+            'OCE': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=OCE&type=',
+            'BR': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=BR&type=',
+            'LAS': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=LAS&type=',
+            'LAN': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=LAN&type=',
+            'RU': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=RU&type=',
+            'TR': 'https://api.tracker.gg/api/v2/lol/standard/matches/riot/{}?region=TR&type=',
 
         }
         self.PROXY = 'exito0:69VxUEcbiQrubdy9@proxy.packetstream.io:31112'
         self.PROXY = 'amitupreti:RefzyvyXp1QVZRfx@proxy.packetstream.io:31112'
-        self.PROXY_DICT = {"http": f"http://{self.PROXY}",
+        self.PROXY_DICT = {"http": f"http://quote{self.PROXY}",
                            "https": f"http://{self.PROXY}"
                            }
 
-        self.HEADERS = {
-            'authority': 'www.op.gg',
+        self.TRACKERS_HEADERS = {
+            'authority': 'www.api.tracker.gg',
             'cache-control': 'max-age=0',
             'dnt': '1',
             'upgrade-insecure-requests': '1',
             'user-agent': 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.130 Safari/537.36',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept': 'application/json',
             'sec-fetch-site': 'same-site',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-user': '?1',
             'sec-fetch-dest': 'document',
-            'referer': 'https://jp.op.gg/',
+            'referer': 'https://api.tracker.gg/',
             'accept-language': 'en-US,en;q=0.9',
             'sec-gpc': '1',
         }
+
         self.cookies = {
             '_hist': quote(self.username),  # added cookies 25 oct , 2021 Without cookies, the website was rejecting update request and sending us in a loop
 
@@ -62,47 +62,48 @@ class OpGGValidator:
         CREATES THE CORRECT region
         :return:
         """
-        return self.REGIONS.get(self.region).format(quote(self.username))
+        return self.URL.get(self.region).format(quote(self.username))
 
 
-    def find_id_using_bs4(self, url, headers):
+    def load_url(self, url):
+        """
+        Loads the url and returns the text
+        :param url:
+        :return:
+        """
+        
+        URL_LOADED = False
+        text_data = ''
+        
+        while not URL_LOADED and self.RETRY_TIMES >= 0:
+            try:
+                print('{} -----> {}'.format(self.RETRY_TIMES, url))
+                response = requests.get(url=url, headers=self.TRACKERS_HEADERS)
 
-        r = requests.get(url , headers=headers)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        script_list = soup.find_all('script')
+                if response.status_code == 200:
+                    resp = 'exist'
+                    break
 
-        #find the json file correct index (it changes !)
-        json_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
-        idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == json_header][0]
+                if response.status_code == 400:
+                    # bad url
+                    resp = 'not existing'
 
+                self.RETRY_TIMES -= 1
 
-        script = script_list[idx].text.strip()
-        try:
-            id = json.loads(script)['props']['pageProps']['data']['id']
-        except:
-            id = ''
-            print('user not found')
-
-        return id
-
+            except Exception as e:
+                print(e)
+                self.RETRY_TIMES -= 1
+        return resp
 
     def run(self):
 
-        '''old way'''
-        # base_url = self.get_url()
-        # Get summnor ID
-        # text_data = self.load_url(base_url, 'GET')
-        # id = self.find_summoner_id(text_data)
+        # get url depending on region and user
+        base_url = self.get_url()
+        # get json data from url
+        resp = self.load_url(base_url)
+        
 
-        '''new way using beautiful soup'''
-        base_url = ''
-        user = self.username
-        region = self.region.lower()
-
-        base_url = 'https://na.op.gg/summoners/' + region + '/' + user
-        id = self.find_id_using_bs4(base_url , self.HEADERS)
-
-        if id != '':
+        if resp == 'exist':
 
             return 1
         
