@@ -1,8 +1,8 @@
 import requests
 from urllib.parse import quote
 import json
-from bs4 import BeautifulSoup
 import datetime
+from scrapy.selector import Selector
 
 class OpGGCrawler:
     def __str__(self):
@@ -130,22 +130,28 @@ class OpGGCrawler:
                 self.RETRY_TIMES -= 1
         return text_data
 
-        
+
 
     def find_id_and_data(self, url, headers):
 
         r = requests.get(url , headers=headers)
-        soup = BeautifulSoup(r.text)
-        script_list = soup.find_all('script')
-        script_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
-        idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == script_header][0]
-        script = script_list[idx].text.strip()
-
-        id = json.loads(script)['props']['pageProps']['data']['id']
         
-        champions = json.loads(script)['props']['pageProps']['data']['championsById']
+        # soup = BeautifulSoup(r.text)
 
-        all_matches = json.loads(script)['props']['pageProps']['games']['data']
+        response = Selector(text=r.text)
+
+        # script_list = soup.find_all('script')
+        # script_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
+        # idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == script_header][0]
+        # script = script_list[idx].text.strip()
+
+        json_str = response.xpath('//script//text()')[3].root
+
+        id = json.loads(json_str)['props']['pageProps']['data']['id']
+        
+        champions = json.loads(json_str)['props']['pageProps']['data']['championsById']
+
+        all_matches = json.loads(json_str)['props']['pageProps']['games']['data']
 
         now = datetime.datetime.now()
         all_data = []

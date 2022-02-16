@@ -3,8 +3,7 @@ import requests
 from urllib.parse import quote
 import requests
 import json
-from bs4 import BeautifulSoup
-
+from scrapy.selector import Selector
 
 class OpGGValidator:
     def __str__(self):
@@ -65,19 +64,23 @@ class OpGGValidator:
         return self.REGIONS.get(self.region).format(quote(self.username))
 
 
-    def find_id_using_bs4(self, url, headers):
+    def find_id(self, url, headers):
 
         r = requests.get(url , headers=headers)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        script_list = soup.find_all('script')
 
-        #find the json file correct index (it changes !)
-        json_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
-        idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == json_header][0]
-        script = script_list[idx].text.strip()
+        # soup = BeautifulSoup(r.text, 'html.parser')
+        # script_list = soup.find_all('script')
+
+        # #find the json file correct index (it changes !)
+        # json_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
+        # idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == json_header][0]
+        # script = script_list[idx].text.strip()
+
+        response = Selector(text=r.text)
+        json_str = response.xpath('//script//text()')[3].root
 
         try:
-            id = json.loads(script)['props']['pageProps']['data']['id']
+            id = json.loads(json_str)['props']['pageProps']['data']['id']
         except:
             id = ''
             print('user not found')
@@ -91,7 +94,7 @@ class OpGGValidator:
         region = self.region.lower()
 
         base_url = 'https://na.op.gg/summoners/' + region + '/' + user
-        id = self.find_id_using_bs4(base_url , self.HEADERS)
+        id = self.find_id(base_url , self.HEADERS)
 
         if id != '':
 
