@@ -1,5 +1,4 @@
 import requests
-import time
 from urllib.parse import quote
 import json
 from bs4 import BeautifulSoup
@@ -45,7 +44,8 @@ class OpGGCrawler:
             'dnt': '1',
             'upgrade-insecure-requests': '1',
             'user-agent': 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.130 Safari/537.36',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            # 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept' : 'application/json',
             'sec-fetch-site': 'same-site',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-user': '?1',
@@ -75,34 +75,6 @@ class OpGGCrawler:
             'TE': 'trailers',
         }
         self.allowed_seconds = minutes * 60
-
-    def string_to_delta(self, string_delta):
-
-        # check if day, month or year
-        value, unit, _ = string_delta.split()
-
-        if unit == 'hour':
-            value = 1        # bcz value = 'an'
-            unit = 'hours'
-        
-        if unit == 'day':
-            value = 1        # bcz value = 'a'
-            unit = 'days'
-        if unit == 'month':
-            value = 1 * 30   # bcz value = 'a'
-            unit = 'days'   
-        if unit == 'months':
-            value = int(value) * 30
-            unit = 'days'
-        if unit == 'year':
-            value = 1 * 365
-            unit = 'days'
-        if unit == 'years':
-            value = int(value) * 365
-            unit = 'days'
-            
-        return int(datetime.timedelta(**{unit: float(value)}).total_seconds())
-
 
     def get_url(self):
         """
@@ -158,70 +130,79 @@ class OpGGCrawler:
                 self.RETRY_TIMES -= 1
         return text_data
 
+        
 
     def find_id_and_data(self, url, headers):
 
         r = requests.get(url , headers=headers)
-        soup = BeautifulSoup(r.text , features="lxml" )
-
+        soup = BeautifulSoup(r.text)
         script_list = soup.find_all('script')
-        li_list = soup.find_all('li')
-
-        #find the json file correct index (it changes !)
         script_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
         idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == script_header][0]
         script = script_list[idx].text.strip()
-    
-        try:
-            id = json.loads(script)['props']['pageProps']['data']['id']
-        except:
-            id = ''
-            print('user not found')
 
-        li_header = {'class': ['css-ja2wlz', 'e1iiyghw3']}
-        idx = [idx for idx, element in enumerate(li_list) if li_list[idx].attrs == li_header]
+        id = json.loads(script)['props']['pageProps']['data']['id']
+        
+        champions = json.loads(script)['props']['pageProps']['data']['championsById']
 
-        curr_time = int(time.time())
+        all_matches = json.loads(script)['props']['pageProps']['games']['data']
+
+        now = datetime.datetime.now()
         all_data = []
         try:
-            for i in idx:
-                block = li_list[i].find_all('div')
+            for match in all_matches:
 
                 name = self.username
-                timestamp = block[4].contents[0]
-                result = block[6].contents[0]
-                kda = block[23].contents[0].text.split(':')[0]
-                champion = block[20].contents[0] 
-                game_type = block[2].contents[0]
-                try:
-                    GameLength = block[7].contents[0].split(':')[0] + 'm'  + ' ' + block[7].contents[0].split(':')[1] + 's'
-                except:
-                    GameLength = ' '
-                    
-                time_delta = curr_time - self.string_to_delta(timestamp)
+                timestamp_str = match['created_at']
+                date_format = datetime.datetime.fromisoformat(timestamp_str)
+                timestamp_game = datetime.datetime.timestamp(date_format)
+                delta = datetime.datetime.timestamp(now) - timestamp_game
+
+                result = match['myData']['stats']['result']
+                result = 'Victory' if result=='WIN' else 'Defeat'
+
+                # kda = (kills+assists)/deaths
+                kills = match['myData']['stats']['kill']
+                deaths = match['myData']['stats']['death']
+                assists = match['myData']['stats']['assist']
+
+                if deaths > 0:
+                    kda = (kills + assists) / deaths
+                    kda = str(round(kda , 2))
+
+                if deaths == 0:
+                    kda = '20'
+
+                champion_id = match['myData']['champion_id']
+                champion = champions[str(champion_id)]['name']
+
+                game_type = match['queue_info']['queue_translate']
                 
+                game_length_sec = match['game_length_second']
+                game_length = str(game_length_sec // 60) + 'm ' + str(game_length_sec % 60) + 's'
+
                 for skip_game in self.BAD_GAME_TYPE:
                     if skip_game.lower() in game_type.lower():
                         continue
                 
                 data = {
                             "name": name,
-                            "timestamp": time_delta,
+                            "timestamp": int(timestamp_game),
                             "result": result,
                             "KDA": kda,
                             "champion": champion,
                             'GameType': game_type,
-                            'GameLength': GameLength
+                            'GameLength': game_length
                         }
 
-                if (curr_time - time_delta) <= self.allowed_seconds:
+                if delta <= self.allowed_seconds:
                     all_data.append(data)
 
 
         except Exception as e:
                 print(e)
 
-        return id, all_data
+        return id , all_data
 
 
 
@@ -237,7 +218,6 @@ class OpGGCrawler:
 
         # get id and player data
         self.summoner_id , all_data = self.find_id_and_data(site_url , self.HEADERS)
-
 
         text = self.load_url(base_url, 'POST')
 

@@ -74,9 +74,8 @@ class OpGGValidator:
         #find the json file correct index (it changes !)
         json_header = {'id': '__NEXT_DATA__', 'type': 'application/json'}
         idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == json_header][0]
-
-
         script = script_list[idx].text.strip()
+
         try:
             id = json.loads(script)['props']['pageProps']['data']['id']
         except:
@@ -88,14 +87,6 @@ class OpGGValidator:
 
     def run(self):
 
-        '''old way'''
-        # base_url = self.get_url()
-        # Get summnor ID
-        # text_data = self.load_url(base_url, 'GET')
-        # id = self.find_summoner_id(text_data)
-
-        '''new way using beautiful soup'''
-        base_url = ''
         user = self.username
         region = self.region.lower()
 
