@@ -145,8 +145,16 @@ class OpGGCrawler:
         # idx = [idx for idx, element in enumerate(script_list) if script_list[idx].attrs == script_header][0]
         # script = script_list[idx].text.strip()
 
-        json_str = response.xpath('//script//text()')[3].root
+        # update 17/2/22
+        # json location changes, so loop over all of the available json to get the correct one
+        all_json_path = response.xpath('//script//text()')
 
+        for element in all_json_path:
+            try:
+                json_str = element.root
+            except:
+                continue
+        
         id = json.loads(json_str)['props']['pageProps']['data']['id']
         
         champions = json.loads(json_str)['props']['pageProps']['data']['championsById']

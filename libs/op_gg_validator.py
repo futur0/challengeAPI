@@ -77,7 +77,16 @@ class OpGGValidator:
         # script = script_list[idx].text.strip()
 
         response = Selector(text=r.text)
-        json_str = response.xpath('//script//text()')[3].root
+
+        # update 17/2/22
+        # json location changes, so loop over all of the available json to get the correct one
+        all_json_path = response.xpath('//script//text()')
+
+        for element in all_json_path:
+            try:
+                json_str = element.root
+            except:
+                continue
 
         try:
             id = json.loads(json_str)['props']['pageProps']['data']['id']
