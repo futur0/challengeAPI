@@ -96,7 +96,7 @@ def loadUserProfile(region, username, observedTimeRange):
 
     # forceUpdate(summonerID,region)
 
-    open("refreshQueue.json", "w").write(json.dumps(entriesInQueue, ensure_ascii=False))
+    open("/home/ubuntu/op_gg_scraper_api/refreshQueue.json", "w").write(json.dumps(entriesInQueue, ensure_ascii=False))
 
     response = requests.get(f'https://www.op.gg/api/games/{region}/summoners/{summonerID}', params=params,
                             headers=headers)
