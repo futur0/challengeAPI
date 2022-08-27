@@ -35,12 +35,13 @@ def forceUpdate(summonerID, region):
 if __name__ == '__main__':
     while True:
         queueData = json.loads(open("refreshQueue.json","r").read())
+        queueList = [x for x in queueData]
         for x in queueData:
             print(f"{x} renewal")
             summonerID, region = queueData[x]
             print(forceUpdate(summonerID, region))
-            del queueData[x]
+            queueList.remove(x)
 
 
         time.sleep(5)
-        open("refreshQueue.json", "w").write(json.dumps(queueData))
+        open("refreshQueue.json", "w").write(json.dumps({x:queueData[x] for x in queueList}))
