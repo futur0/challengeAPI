@@ -33,12 +33,12 @@ def forceUpdate(summonerID, region):
     return refreshStatus
 
 if __name__ == '__main__':
-    while True:
-        queueData = json.loads(open("refreshQueue.json","r").read())
-        for x in queueData:
-            print(f"{x} renewal")
-            summonerID, region = queueData[x]
-            print(forceUpdate(summonerID, region))
+    # while True:
+    queueData = json.loads(open("refreshQueue.json","r").read())
+    for x in queueData:
+        print(f"{x} renewal")
+        summonerID, region = queueData[x]
+        print(forceUpdate(summonerID, region))
 
-        open("refreshQueue.json", "w").write(json.dumps({}))
-        time.sleep(10)
+    open("refreshQueue.json", "w").write(json.dumps({}))
+    time.sleep(10)
