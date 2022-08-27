@@ -68,18 +68,18 @@ def validate_username():
     return jsonify(RESP_VALID)
 
 
-if __name__ == "__main__":
-    RESPONSE = {
-        'status': False,
-        'message': '',
-        'data': {
-            'count': 0,
-            'results': []
-        }
+RESPONSE = {
+    'status': False,
+    'message': '',
+    'data': {
+        'count': 0,
+        'results': []
     }
+}
 
-    RESP_VALID = {
-        'message': '',
-        'status': '',
-    }
+RESP_VALID = {
+    'message': '',
+    'status': '',
+}
+if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
