@@ -29,16 +29,17 @@ def forceUpdate(summonerID, region):
     response = requests.post(f'https://www.op.gg/api/summoners/{region}/{summonerID}/renewal', headers=headers)
     refreshStatus = response.json()
     print(f"Refresh triggered for {summonerID}")
-    time.sleep(10)
+    # time.sleep(10)
     return refreshStatus
 
 if __name__ == '__main__':
-    # while True:
-    queueData = json.loads(open("refreshQueue.json","r").read())
-    for x in queueData:
-        print(f"{x} renewal")
-        summonerID, region = queueData[x]
-        print(forceUpdate(summonerID, region))
+    while True:
+        queueData = json.loads(open("refreshQueue.json","r").read())
+        for x in queueData:
+            print(f"{x} renewal")
+            summonerID, region = queueData[x]
+            print(forceUpdate(summonerID, region))
 
-    open("refreshQueue.json", "w").write(json.dumps({}))
-    time.sleep(10)
+
+        time.sleep(5)
+        open("refreshQueue.json", "w").write(json.dumps({}))
