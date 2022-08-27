@@ -43,5 +43,5 @@ if __name__ == '__main__':
             queueList.remove(x)
 
 
-        time.sleep(5)
         open("refreshQueue.json", "w").write(json.dumps({x:queueData[x] for x in queueList}))
+        time.sleep(5)
