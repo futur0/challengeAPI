@@ -1,0 +1,14 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+Environment="APP_ENV=PRD"
+WorkingDirectory=/home/ubuntu/op_gg_scraper_api
+ExecStart=/home/ubuntu/op_gg_scraper_api/.env/bin/gunicorn --access-logfile /home/ubuntu/logs/gunicorn-website-access.log --error-logfile /home/ubuntu/logs/gunicorn-website-error.log   --workers 6 --bind unix:/home/ubuntu/op_gg_scraper_api/op_gg_scraper_api.sock -m 007 wsgi:application --timeout 20
+
+
+[Install]
+WantedBy=multi-user.target

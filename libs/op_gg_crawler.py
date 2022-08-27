@@ -91,7 +91,7 @@ def loadUserProfile(region, username, observedTimeRange):
     }
     summonerID, championsDict = fetchSummonerID(region, username)
 
-    entriesInQueue = json.loads(open("refreshQueue.json", "r").read())
+    entriesInQueue = json.loads(open("/home/ubuntu/op_gg_scraper_api/refreshQueue.json", "r").read())
     entriesInQueue[username] = (summonerID, region)
 
     # forceUpdate(summonerID,region)
