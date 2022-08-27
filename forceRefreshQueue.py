@@ -39,7 +39,8 @@ if __name__ == '__main__':
             print(f"{x} renewal")
             summonerID, region = queueData[x]
             print(forceUpdate(summonerID, region))
+            del queueData[x]
 
 
         time.sleep(5)
-        open("refreshQueue.json", "w").write(json.dumps({}))
+        open("refreshQueue.json", "w").write(json.dumps(queueData))
